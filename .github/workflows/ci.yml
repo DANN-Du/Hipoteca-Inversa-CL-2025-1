@@ -1,0 +1,73 @@
+name: CI Pipeline - Hipoteca Inversa CL
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    name: Pruebas Unitarias, API, Seguridad y Playwright E2E
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: hipoteca_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install pytest pytest-cov playwright pytest-playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Inicializar tablas en PostgreSQL
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: hipoteca_db
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+        run: |
+          python sql/create_tables.py
+
+      - name: Ejecutar pruebas unitarias, de API y seguridad SQL
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: hipoteca_db
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+        run: |
+          pytest tests/test_calculo.py tests/test_api_endpoints.py tests/test_seguridad_sql.py -v
+
+      - name: Ejecutar pruebas End-to-End con Playwright
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: hipoteca_db
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+        run: |
+          pytest tests/test_playwright_e2e.py -v
