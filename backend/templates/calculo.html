@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario Hipoteca Inversa</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #56CCF2, #2F80ED);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        form {
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            width: 400px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2F80ED;
+            margin-bottom: 20px;
+        }
+
+        div {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        input[type="submit"] {
+            background: linear-gradient(135deg, #2F80ED, #56CCF2);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background: linear-gradient(135deg, #56CCF2, #2F80ED);
+        }
+    </style>
+</head>
+<body>
+
+    <form action="/calcular_hipoteca">
+        <h2>Formulario Hipoteca Inversa</h2>
+
+        <div>
+            <label for="nombre">Nombre completo:</label>
+            <input type="text" id="nombre" name="nombre" required />
+        </div>
+
+        <div>
+            <label for="edad">Edad:</label>
+            <input type="number" id="edad" name="edad" required min="0" />
+        </div>
+
+        <div>
+            <label for="cedula">Cédula:</label>
+            <input type="text" id="cedula" name="cedula" required />
+        </div>
+
+        <div>
+            <label for="fecha_nacimiento">Fecha de nacimiento:</label>
+            <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required />
+        </div>
+
+        <div>
+            <label for="valor_vivienda">Valor de la vivienda (COP):</label>
+            <input type="number" id="valor_vivienda" name="valor_vivienda" required min="0" step="1000" />
+        </div>
+
+        <div>
+            <label for="ciudad_vivienda">Ciudad de la vivienda:</label>
+            <select id="ciudad_vivienda" name="ciudad_vivienda" required>
+                <option value="">Seleccione una ciudad</option>
+                <option value="Leticia">Leticia (Amazonas)</option>
+                <option value="Medellín">Medellín (Antioquia)</option>
+                <option value="Arauca">Arauca (Arauca)</option>
+                <option value="Barranquilla">Barranquilla (Atlántico)</option>
+                <option value="Cartagena">Cartagena (Bolívar)</option>
+                <option value="Tunja">Tunja (Boyacá)</option>
+                <option value="Manizales">Manizales (Caldas)</option>
+                <option value="Florencia">Florencia (Caquetá)</option>
+                <option value="Yopal">Yopal (Casanare)</option>
+                <option value="Popayán">Popayán (Cauca)</option>
+                <option value="Valledupar">Valledupar (Cesar)</option>
+                <option value="Quibdó">Quibdó (Chocó)</option>
+                <option value="Montería">Montería (Córdoba)</option>
+                <option value="Bogotá">Bogotá (Cundinamarca)</option>
+                <option value="Inírida">Inírida (Guainía)</option>
+                <option value="San José del Guaviare">San José del Guaviare (Guaviare)</option>
+                <option value="Neiva">Neiva (Huila)</option>
+                <option value="Riohacha">Riohacha (La Guajira)</option>
+                <option value="Santa Marta">Santa Marta (Magdalena)</option>
+                <option value="Villavicencio">Villavicencio (Meta)</option>
+                <option value="Pasto">Pasto (Nariño)</option>
+                <option value="Cúcuta">Cúcuta (Norte de Santander)</option>
+                <option value="Mocoa">Mocoa (Putumayo)</option>
+                <option value="Armenia">Armenia (Quindío)</option>
+                <option value="Pereira">Pereira (Risaralda)</option>
+                <option value="San Andrés">San Andrés (San Andrés y Providencia)</option>
+                <option value="Bucaramanga">Bucaramanga (Santander)</option>
+                <option value="Sincelejo">Sincelejo (Sucre)</option>
+                <option value="Ibagué">Ibagué (Tolima)</option>
+                <option value="Cali">Cali (Valle del Cauca)</option>
+                <option value="Mitú">Mitú (Vaupés)</option>
+                <option value="Puerto Carreño">Puerto Carreño (Vichada)</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="barrio_vivienda">Barrio de la vivienda:</label>
+            <input type="text" id="barrio_vivienda" name="barrio_vivienda" required />
+        </div>
+
+        <input type="submit" value="Guardar" />
+    </form>
+
+</body>
+</html>

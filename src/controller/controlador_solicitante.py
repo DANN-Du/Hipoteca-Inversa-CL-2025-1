@@ -1,77 +1,125 @@
+import os
 import sys
 sys.path.append("src")
-sys.path.append( "." )
+sys.path.append(".")
 
 from model.solicitante import Solicitante
 import psycopg2
-import secret_config
+
+try:
+    import secret_config
+except ImportError:
+    secret_config = None
+
 
 class ControladorSolicitante:
 
+    @staticmethod
     def crear_tabla():
         cursor = ControladorSolicitante.obtener_cursor()
-        with open("sql/crear_tabla_solicitantes.sql", "r", encoding="utf-8") as archivo_sql:
-            sql = archivo_sql.read()
-            cursor.execute(sql)
-            cursor.connection.commit()
-    
-    def eliminar_tabla():
-        cursor = ControladorSolicitante.obtener_cursor()
-        # Si existe la tabla viviendas, eliminarla primero para evitar dependencias (FK)
-        try:
-            cursor.execute("DROP TABLE IF EXISTS viviendas;")
-        except Exception:
-            # Si no existe o falla, continuar
-            pass
-        sql = "DROP TABLE IF EXISTS solicitantes;"
+        posibles_rutas = [
+            "sql/crear_tabla_solicitantes.sql",
+            "../sql/crear_tabla_solicitantes.sql",
+            "backend/sql/crear_tabla_solicitantes.sql"
+        ]
+        sql = None
+        for ruta in posibles_rutas:
+            if os.path.exists(ruta):
+                with open(ruta, "r", encoding="utf-8") as archivo_sql:
+                    sql = archivo_sql.read()
+                break
+
+        if not sql:
+            sql = """
+            CREATE TABLE IF NOT EXISTS solicitantes (
+                nombre VARCHAR(100) NOT NULL,
+                identificacion VARCHAR(20) PRIMARY KEY NOT NULL,
+                fecha_nacimiento DATE NOT NULL,
+                edad INT NOT NULL
+            );
+            """
         cursor.execute(sql)
         cursor.connection.commit()
-    
+
+    @staticmethod
+    def eliminar_tabla():
+        cursor = ControladorSolicitante.obtener_cursor()
+        try:
+            cursor.execute("DROP TABLE IF EXISTS viviendas CASCADE;")
+        except Exception:
+            pass
+        sql = "DROP TABLE IF EXISTS solicitantes CASCADE;"
+        cursor.execute(sql)
+        cursor.connection.commit()
+
+    @staticmethod
     def borrar_datos_tabla():
         cursor = ControladorSolicitante.obtener_cursor()
         sql = "DELETE FROM solicitantes;"
         cursor.execute(sql)
         cursor.connection.commit()
 
+    @staticmethod
     def insertar(solicitante: Solicitante):
-        """ Recibe un a instancia de la clase Solicitante y la inserta en la tabla respectiva"""
+        """Recibe una instancia de la clase Solicitante y la inserta en la tabla respectiva."""
         cursor = ControladorSolicitante.obtener_cursor()
         consulta = "INSERT INTO solicitantes (nombre, identificacion, fecha_nacimiento, edad) VALUES (%s, %s, %s, %s)"
         cursor.execute(consulta, (solicitante.nombre, solicitante.identificacion, solicitante.fecha_nacimiento, solicitante.edad))
         cursor.connection.commit()
 
+    @staticmethod
     def buscar_por_cedula(identificacion_solicitante: str) -> Solicitante:
-        """ Retorna una instancia de la clase Solicitante con los datos obtenidos de la base de datos
-            a partir de la cedula suministrada como parametro """
+        """Retorna una instancia de la clase Solicitante con los datos obtenidos de la BD
+        a partir de la cedula suministrada como parametro de forma parametrizada y segura."""
         cursor = ControladorSolicitante.obtener_cursor()
-        cursor.execute(f"""select nombre, identificacion, fecha_nacimiento, edad
-        from solicitantes where identificacion = '{identificacion_solicitante}'""" )
+        consulta = "SELECT nombre, identificacion, fecha_nacimiento, edad FROM solicitantes WHERE identificacion = %s"
+        cursor.execute(consulta, (identificacion_solicitante,))
         fila = cursor.fetchone()
-        # Si no se encuentra ninguna fila, retornar None en vez de intentar indexar None
         if fila is None:
             return None
 
-        resultado = Solicitante(nombre=fila[0], identificacion=fila[1], fecha_nacimiento=fila[2], edad=fila[3])
-        return resultado
+        return Solicitante(nombre=fila[0], identificacion=fila[1], fecha_nacimiento=fila[2], edad=fila[3])
 
+    @staticmethod
+    def listar_todos() -> list:
+        """Retorna la lista de todos los solicitantes registrados en la BD."""
+        cursor = ControladorSolicitante.obtener_cursor()
+        consulta = "SELECT nombre, identificacion, fecha_nacimiento, edad FROM solicitantes ORDER BY nombre ASC"
+        cursor.execute(consulta)
+        filas = cursor.fetchall()
+        if not filas:
+            return []
+        return [
+            Solicitante(nombre=fila[0], identificacion=fila[1], fecha_nacimiento=fila[2], edad=fila[3])
+            for fila in filas
+        ]
+
+    @staticmethod
     def modificar_datos(solicitante: Solicitante):
         """Actualiza los datos de un solicitante existente identificado por su cedula."""
         cursor = ControladorSolicitante.obtener_cursor()
         consulta = "UPDATE solicitantes SET nombre = %s, fecha_nacimiento = %s, edad = %s WHERE identificacion = %s"
         cursor.execute(consulta, (solicitante.nombre, solicitante.fecha_nacimiento, solicitante.edad, solicitante.identificacion))
-        # Si no se actualizó ninguna fila, indicar que el solicitante no existe
         if cursor.rowcount == 0:
             cursor.connection.rollback()
             raise ValueError(f"No existe solicitante con identificacion {solicitante.identificacion}")
         cursor.connection.commit()
 
+    @staticmethod
     def obtener_cursor():
-        """ Crea la conexion a la base de datos y retorna un cursor para hacer consultas """
-        connection = psycopg2.connect(database=secret_config.PGDATABASE, 
-                                      user=secret_config.PGUSER, 
-                                      password=secret_config.PGPASSWORD, 
-                                      host=secret_config.PGHOST, 
-                                      port=secret_config.PGPORT)
-        # Todas las instrucciones se ejecutan a tavés de un cursor
-        cursor = connection.cursor()
-        return cursor
+        """Crea la conexion a la base de datos y retorna un cursor.
+        Soporta variables de entorno para Docker y compatibilidad con secret_config.py"""
+        host = os.environ.get("DB_HOST", getattr(secret_config, "PGHOST", "localhost"))
+        port = int(os.environ.get("DB_PORT", getattr(secret_config, "PGPORT", 5432)))
+        database = os.environ.get("DB_NAME", getattr(secret_config, "PGDATABASE", "hipoteca_db"))
+        user = os.environ.get("DB_USER", getattr(secret_config, "PGUSER", "postgres"))
+        password = os.environ.get("DB_PASSWORD", getattr(secret_config, "PGPASSWORD", "postgres"))
+
+        connection = psycopg2.connect(
+            database=database,
+            user=user,
+            password=password,
+            host=host,
+            port=port
+        )
+        return connection.cursor()

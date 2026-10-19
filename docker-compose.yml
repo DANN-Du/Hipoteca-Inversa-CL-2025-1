@@ -1,0 +1,80 @@
+services:
+  # ===========================================================================
+  # 1. BASE DE DATOS (PostgreSQL 16)
+  # ===========================================================================
+  db:
+    image: postgres:16-alpine
+    container_name: hipoteca-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hipoteca_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - hipoteca-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hipoteca_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ===========================================================================
+  # 2. APP BACKEND (Flask + Swagger OpenAPI + Gunicorn)
+  # ===========================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: dduque642/hipoteca-inversa-backend:latest
+    container_name: hipoteca-backend
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: hipoteca_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      PORT: 5000
+      FLASK_ENV: production
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - hipoteca-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/api/v1/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  # ===========================================================================
+  # 3. APP FRONTEND (HTML5 / CSS3 / JS + Nginx Alpine)
+  # ===========================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: dduque642/hipoteca-inversa-frontend:latest
+    container_name: hipoteca-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - hipoteca-net
+
+networks:
+  hipoteca-net:
+    driver: bridge
+
+volumes:
+  postgres_data:

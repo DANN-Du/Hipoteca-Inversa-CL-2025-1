@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hipoteca Inversa CL | Plataforma Financiera</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- HEADER & NAVEGACIÓN -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <span class="brand-icon">🏦</span>
+        <div>
+          <h1 class="brand-title">Hipoteca Inversa CL</h1>
+          <p class="brand-subtitle">Gestión de la Configuración · Entrega 2</p>
+        </div>
+      </div>
+      <nav class="nav-tabs" id="navTabs">
+        <button class="nav-tab active" data-tab="tab-inicio">🏠 Inicio & Estado</button>
+        <button class="nav-tab" data-tab="tab-simulador">🧮 Simulador</button>
+        <button class="nav-tab" data-tab="tab-solicitantes">👤 Solicitantes</button>
+        <button class="nav-tab" data-tab="tab-viviendas">🏡 Viviendas</button>
+        <button class="nav-tab" data-tab="tab-flujo-prueba">🔄 Flujo de Prueba E2E</button>
+        <a href="/apidocs/" target="_blank" class="nav-tab swagger-link">📖 Swagger API ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <!-- =================================================================== -->
+    <!-- TAB 1: INICIO & ESTADO ("HOLA MUNDO" & CONECTIVIDAD) -->
+    <!-- =================================================================== -->
+    <section id="tab-inicio" class="tab-content active">
+      <div class="hero-card">
+        <div class="hero-badge">Entrega 2 · Contenerización y Comunicación de Servicios</div>
+        <h2 class="hero-title">¡Hola Mundo desde el Frontend de Hipoteca Inversa CL!</h2>
+        <p class="hero-desc">
+          Esta plataforma simula el cálculo de hipotecas inversas en Colombia (Banco de la República 2025) 
+          y administra la información de adultos mayores solicitantes e inmuebles en garantía sobre PostgreSQL.
+        </p>
+      </div>
+
+      <div class="section-title-wrap">
+        <h3>Monitoreo y Comunicación de Componentes</h3>
+        <button id="btnCheckHealth" class="btn-primary-sm">🔄 Verificar Conexión de Servicios</button>
+      </div>
+
+      <div class="status-grid">
+        <div class="status-card" id="cardFrontend">
+          <div class="status-icon">💻</div>
+          <div class="status-info">
+            <h4>App Frontend</h4>
+            <p>Servidor Nginx Alpine en Contenedor Docker</p>
+            <span class="badge badge-success">Online · Puerto 80</span>
+          </div>
+        </div>
+
+        <div class="status-card" id="cardBackend">
+          <div class="status-icon">⚙️</div>
+          <div class="status-info">
+            <h4>App Backend</h4>
+            <p>API REST Flask + Swagger (OpenAPI)</p>
+            <span class="badge badge-checking" id="badgeBackend">Verificando...</span>
+          </div>
+        </div>
+
+        <div class="status-card" id="cardDatabase">
+          <div class="status-icon">🗄️</div>
+          <div class="status-info">
+            <h4>Base de Datos</h4>
+            <p>PostgreSQL 16 Relacional</p>
+            <span class="badge badge-checking" id="badgeDatabase">Verificando...</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <h4>📋 Parámetros Regulatorios Vigentes (2025)</h4>
+        <div class="parameters-grid">
+          <div class="param-item">
+            <strong>Tasa Efectiva Anual (TEA):</strong> 24.78%
+          </div>
+          <div class="param-item">
+            <strong>Tasa Efectiva Mensual (TEM):</strong> 1.86%
+          </div>
+          <div class="param-item">
+            <strong>Edad de Elegibilidad:</strong> 65 a 114 años
+          </div>
+          <div class="param-item">
+            <strong>Valor Mínimo Vivienda:</strong> $50.000.000 COP
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TAB 2: SIMULADOR DE HIPOTECA INVERSA -->
+    <!-- =================================================================== -->
+    <section id="tab-simulador" class="tab-content">
+      <div class="card form-card">
+        <h2>Simulador de Cuota Mensual</h2>
+        <p class="card-subtitle">Calcule la cuota mensual orientativa, intereses y saldo final proyectado.</p>
+
+        <form id="formCalculo">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="calcEdad">Edad del Solicitante (Años):</label>
+              <input type="number" id="calcEdad" name="edad" min="65" max="114" placeholder="Ej: 72" required>
+              <small class="field-hint">Rango permitido: 65 a 114 años</small>
+            </div>
+
+            <div class="form-group">
+              <label for="calcValor">Valor Comercial de la Vivienda (COP):</label>
+              <input type="number" id="calcValor" name="valor_vivienda" min="50000000" step="1000000" placeholder="Ej: 300000000" required>
+              <small class="field-hint">Mínimo: $50.000.000 COP</small>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="btnCalcular">🧮 Calcular Hipoteca</button>
+            <button type="button" class="btn-secondary" id="btnEjemploCalc">Cargar Ejemplo (72 años / $300M)</button>
+          </div>
+        </form>
+
+        <div id="calculoError" class="alert alert-error hidden"></div>
+
+        <div id="calculoResultados" class="results-box hidden">
+          <h3>📊 Resultados de la Simulación</h3>
+          <div class="metrics-grid">
+            <div class="metric-card highlight">
+              <span class="metric-label">Pago Mensual Recibido</span>
+              <span class="metric-value" id="resPagoMensual">$0 COP</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Porcentaje Financiado</span>
+              <span class="metric-value" id="resPorcentaje">0%</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Plazo de Financiación</span>
+              <span class="metric-value" id="resPlazo">0 años</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Valor Total Financiado</span>
+              <span class="metric-value" id="resValorFinanciado">$0 COP</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Intereses Proyectados</span>
+              <span class="metric-value" id="resIntereses">$0 COP</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Saldo Final de la Deuda</span>
+              <span class="metric-value" id="resSaldoFinal">$0 COP</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TAB 3: GESTIÓN DE SOLICITANTES -->
+    <!-- =================================================================== -->
+    <section id="tab-solicitantes" class="tab-content">
+      <div class="split-grid">
+        <!-- Formulario Registro Solicitante -->
+        <div class="card">
+          <h2>Registrar Solicitante</h2>
+          <p class="card-subtitle">Ingrese los datos personales del adulto mayor.</p>
+
+          <form id="formCrearSolicitante">
+            <div class="form-group">
+              <label for="solNombre">Nombre Completo:</label>
+              <input type="text" id="solNombre" required placeholder="Ej: Beatriz Elena Montoya">
+            </div>
+
+            <div class="form-group">
+              <label for="solIdentificacion">Número de Identificación (Cédula):</label>
+              <input type="text" id="solIdentificacion" required placeholder="Ej: 1022345678">
+            </div>
+
+            <div class="form-group">
+              <label for="solFechaNac">Fecha de Nacimiento:</label>
+              <input type="date" id="solFechaNac" required>
+            </div>
+
+            <div class="form-group">
+              <label for="solEdad">Edad Calculada:</label>
+              <input type="number" id="solEdad" min="1" max="120" required placeholder="Ej: 72">
+            </div>
+
+            <button type="submit" class="btn-primary" id="btnGuardarSolicitante">💾 Guardar en Base de Datos</button>
+            <div id="solMsg" class="alert hidden"></div>
+          </form>
+        </div>
+
+        <!-- Búsqueda y Lista de Solicitantes -->
+        <div class="card">
+          <h2>Buscar Solicitante</h2>
+          <p class="card-subtitle">Búsqueda directa y parametrizada por cédula.</p>
+
+          <div class="search-box">
+            <input type="text" id="inputBuscarCedula" placeholder="Ingrese número de cédula...">
+            <button id="btnBuscarCedula" class="btn-primary-sm">🔍 Buscar</button>
+          </div>
+
+          <div id="solicitanteEncontrado" class="found-box hidden">
+            <h4>Solicitante Encontrado</h4>
+            <p><strong>Nombre:</strong> <span id="fNombre"></span></p>
+            <p><strong>Cédula:</strong> <span id="fCedula"></span></p>
+            <p><strong>Nacimiento:</strong> <span id="fNacimiento"></span></p>
+            <p><strong>Edad:</strong> <span id="fEdad"></span> años</p>
+          </div>
+
+          <div class="table-header-wrap">
+            <h3>Solicitantes Registrados</h3>
+            <button id="btnRefrescarSolicitantes" class="btn-secondary-sm">🔄 Refrescar</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table" id="tablaSolicitantes">
+              <thead>
+                <tr>
+                  <th>Cédula</th>
+                  <th>Nombre</th>
+                  <th>Edad</th>
+                  <th>F. Nacimiento</th>
+                </tr>
+              </thead>
+              <tbody id="tbodySolicitantes">
+                <tr><td colspan="4" class="text-center">Cargando solicitantes...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TAB 4: GESTIÓN DE VIVIENDAS -->
+    <!-- =================================================================== -->
+    <section id="tab-viviendas" class="tab-content">
+      <div class="split-grid">
+        <!-- Formulario Registro Vivienda -->
+        <div class="card">
+          <h2>Registrar Vivienda en Garantía</h2>
+          <p class="card-subtitle">Asocie un inmueble a un solicitante propietario.</p>
+
+          <form id="formCrearVivienda">
+            <div class="form-group">
+              <label for="vivCiudad">Ciudad:</label>
+              <select id="vivCiudad" required>
+                <option value="">Seleccione una ciudad</option>
+                <option value="Medellín">Medellín</option>
+                <option value="Bogotá">Bogotá</option>
+                <option value="Cali">Cali</option>
+                <option value="Barranquilla">Barranquilla</option>
+                <option value="Cartagena">Cartagena</option>
+                <option value="Bucaramanga">Bucaramanga</option>
+                <option value="Pereira">Pereira</option>
+                <option value="Manizales">Manizales</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="vivBarrio">Barrio:</label>
+              <input type="text" id="vivBarrio" required placeholder="Ej: El Poblado">
+            </div>
+
+            <div class="form-group">
+              <label for="vivDireccion">Dirección Completa (Única):</label>
+              <input type="text" id="vivDireccion" required placeholder="Ej: Cra 43A # 1-50">
+            </div>
+
+            <div class="form-group">
+              <label for="vivPropietario">Cédula del Solicitante Propietario:</label>
+              <input type="text" id="vivPropietario" required placeholder="Debe existir en solicitantes">
+            </div>
+
+            <div class="form-group">
+              <label for="vivValor">Valor Comercial (COP):</label>
+              <input type="number" id="vivValor" min="50000000" step="1000000" required placeholder="Ej: 350000000">
+            </div>
+
+            <button type="submit" class="btn-primary" id="btnGuardarVivienda">💾 Guardar Vivienda en BD</button>
+            <div id="vivMsg" class="alert hidden"></div>
+          </form>
+        </div>
+
+        <!-- Búsqueda y Lista de Viviendas -->
+        <div class="card">
+          <h2>Buscar Vivienda</h2>
+          <p class="card-subtitle">Búsqueda por dirección o propietario.</p>
+
+          <div class="search-box">
+            <input type="text" id="inputBuscarDireccion" placeholder="Ingrese dirección exacta...">
+            <button id="btnBuscarDireccion" class="btn-primary-sm">🔍 Buscar</button>
+          </div>
+
+          <div id="viviendaEncontrada" class="found-box hidden">
+            <h4>Vivienda Encontrada</h4>
+            <p><strong>Dirección:</strong> <span id="fvDireccion"></span></p>
+            <p><strong>Ciudad / Barrio:</strong> <span id="fvUbicacion"></span></p>
+            <p><strong>Propietario:</strong> <span id="fvPropietario"></span></p>
+            <p><strong>Valor:</strong> <span id="fvValor"></span></p>
+          </div>
+
+          <div class="table-header-wrap">
+            <h3>Viviendas Registradas</h3>
+            <button id="btnRefrescarViviendas" class="btn-secondary-sm">🔄 Refrescar</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table" id="tablaViviendas">
+              <thead>
+                <tr>
+                  <th>Dirección</th>
+                  <th>Ciudad</th>
+                  <th>Barrio</th>
+                  <th>Propietario</th>
+                  <th>Valor COP</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyViviendas">
+                <tr><td colspan="5" class="text-center">Cargando viviendas...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TAB 5: FLUJO COMPLETO DE PRUEBA (E2E) -->
+    <!-- =================================================================== -->
+    <section id="tab-flujo-prueba" class="tab-content">
+      <div class="card">
+        <div class="flow-header">
+          <div>
+            <h2>Flujo Completo de Prueba de Integración</h2>
+            <p class="card-subtitle">
+              Demostración automatizada de comunicación integral: 
+              <strong>Frontend ⟷ Backend ⟷ Base de Datos PostgreSQL</strong>.
+            </p>
+          </div>
+          <button id="btnEjecutarFlujo" class="btn-primary">▶️ Ejecutar Flujo Completo</button>
+        </div>
+
+        <div class="steps-flow">
+          <div class="step-card" id="flowStep1">
+            <div class="step-num">1</div>
+            <div class="step-text">
+              <strong>Frontend solicita Backend</strong>
+              <p>Envía petición HTTP POST a <code>/api/v1/flujo-prueba</code></p>
+            </div>
+            <div class="step-status">⏳ Pendiente</div>
+          </div>
+
+          <div class="step-card" id="flowStep2">
+            <div class="step-num">2</div>
+            <div class="step-text">
+              <strong>Persistencia de Solicitante</strong>
+              <p>El backend inserta un solicitante de prueba en PostgreSQL</p>
+            </div>
+            <div class="step-status">⏳ Pendiente</div>
+          </div>
+
+          <div class="step-card" id="flowStep3">
+            <div class="step-num">3</div>
+            <div class="step-text">
+              <strong>Persistencia de Vivienda</strong>
+              <p>Se asocia un inmueble con clave foránea en la tabla <code>viviendas</code></p>
+            </div>
+            <div class="step-status">⏳ Pendiente</div>
+          </div>
+
+          <div class="step-card" id="flowStep4">
+            <div class="step-num">4</div>
+            <div class="step-text">
+              <strong>Cálculo Financiero y Validación</strong>
+              <p>Aplica reglas matemáticas (TEA 24.78%, plazo, cuota, intereses y saldo)</p>
+            </div>
+            <div class="step-status">⏳ Pendiente</div>
+          </div>
+        </div>
+
+        <div id="flujoResultadoBox" class="terminal-box hidden">
+          <div class="terminal-header">
+            <span>Terminal de Ejecución E2E</span>
+            <span id="terminalBadge" class="badge badge-success">Completado</span>
+          </div>
+          <pre id="terminalOutput">Esperando ejecución...</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p><strong>Hipoteca Inversa CL · 2025-1</strong> | Gestión de la Configuración | Universidad de Medellín</p>
+      <p>Desarrolladores: <strong>Juan Sebastian Pinilla Giraldo</strong> & <strong>Daniel Duque</strong></p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

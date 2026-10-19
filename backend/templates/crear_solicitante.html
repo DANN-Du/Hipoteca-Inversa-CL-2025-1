@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+</head>
+
+<body>
+    
+    <form action="/buscar_solicitante">
+        <h2>Buscar un solicitante</h2>
+        Escriba el número de identificación:
+        <input type="text" name="identificacion_buscada" />
+        <button>Buscar</button>
+    </form>
+
+    <form action="/guardar_solicitante">
+        <h2>Insertar un solicitante</h2>
+        <!-- La etiqueta table se usa para crear tablas en HTML -->
+        <table>
+            <!-- El elemento tr describe una fila de la tabla -->
+            <tr>
+                <!-- Cada elemento td corresponde a una celda dentro de la fila -->
+                <td>Nombre</td>
+                <td>
+                    <input type="text" name="nombre" />
+                </td>
+            </tr>
+            <tr>
+                <td>Identificación</td>
+                <td>
+                    <input type="text" name="identificacion" />
+                </td>
+            </tr>
+            <tr>
+                <td>Fecha de Nacimiento</td>
+                <td>
+                    <input type="date" name="fecha_nacimiento" />
+                </td>
+            </tr>
+            <tr>
+                <td>Edad</td>
+                <td>
+                    <input type="number" name="edad" />
+                </td>
+            </tr>
+        </table>
+
+        <input type="submit" />
+    </form>
+
+    <p>
+        Si es la primera vez que ejecuta esta aplicación, necesitará crear las tablas en la base de datos
+        haciendo <a href="/crear_tablas">click aqui</a>
+    </p>
+
+</body>
+
+</html>

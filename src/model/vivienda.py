@@ -21,5 +21,26 @@ class Vivienda  :
             and self.barrio == otra.barrio
             and self.direccion == otra.direccion
             and self.identificacion_propietario == otra.identificacion_propietario
-            and self.valor == otra.valor
+            and float(self.valor) == float(otra.valor)
+        )
+
+    def to_dict(self) -> dict:
+        """Convierte la instancia a un diccionario serializable a JSON."""
+        return {
+            "ciudad": self.ciudad,
+            "barrio": self.barrio,
+            "direccion": self.direccion,
+            "identificacion_propietario": self.identificacion_propietario,
+            "valor": float(self.valor)
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Vivienda":
+        """Crea una instancia a partir de un diccionario."""
+        return cls(
+            ciudad=data.get("ciudad", ""),
+            barrio=data.get("barrio", ""),
+            direccion=data.get("direccion", ""),
+            identificacion_propietario=str(data.get("identificacion_propietario", "")),
+            valor=float(data.get("valor", 0.0))
         )
