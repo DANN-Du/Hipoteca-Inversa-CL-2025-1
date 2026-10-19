@@ -1,10 +1,10 @@
-# 🏦 Hipoteca Inversa CL — Segunda Entrega (2025-1)
+#  Hipoteca Inversa CL — Segunda Entrega (2025-1)
 
 Sistema integral de simulación financiera de **Hipotecas Inversas en Colombia** y administración de solicitantes e inmuebles en garantía. Este proyecto fue desarrollado bajo una arquitectura monorepo contenerizada con **Docker**, comunicando una aplicación **Frontend**, una API REST **Backend** documentada con **Swagger (OpenAPI)** y una base de datos relacional **PostgreSQL**.
 
 ---
 
-## 👥 Equipo de Trabajo e Integrantes
+##  Equipo de Trabajo e Integrantes
 
 | Nombre Completo | Correo Institucional | Rol Principal | Responsabilidades Clave |
 | :--- | :--- | :--- | :--- |
@@ -13,7 +13,7 @@ Sistema integral de simulación financiera de **Hipotecas Inversas en Colombia**
 
 ---
 
-## 🚀 Arquitectura y Estructura Monorepo
+##  Arquitectura y Estructura Monorepo
 
 El repositorio sigue estrictamente la estructura recomendada para la entrega, separando frontend y backend como módulos desacoplados y contenerizados:
 
@@ -65,7 +65,7 @@ Hipoteca-Inversa-CL-2025-1/
 
 ---
 
-## 🛠️ Tecnologías y Versiones Utilizadas
+##  Tecnologías y Versiones Utilizadas
 
 | Componente | Tecnología | Versión | Propósito |
 | :--- | :--- | :--- | :--- |
@@ -82,7 +82,7 @@ Hipoteca-Inversa-CL-2025-1/
 
 ---
 
-## 📦 Descarga del Proyecto e Imágenes DockerHub
+##  Descarga del Proyecto e Imágenes DockerHub
 
 ### 1. Clonar el repositorio desde GitHub
 ```bash
@@ -121,7 +121,7 @@ docker push dduque642/hipoteca-inversa-frontend:latest
 
 ---
 
-## ⚙️ Instalación y Puesta en Marcha
+##  Instalación y Puesta en Marcha
 
 ### Opción A: Ejecución con Docker Compose (Recomendada)
 
@@ -195,7 +195,7 @@ python backend/app.py
 
 ---
 
-## 🌐 URLs y Puntos de Acceso
+##  URLs y Puntos de Acceso
 
 | Servicio | URL Local | Descripción |
 | :--- | :--- | :--- |
@@ -206,7 +206,7 @@ python backend/app.py
 
 ---
 
-## 📖 Endpoints de la API REST (Swagger / OpenAPI)
+##  Endpoints de la API REST (Swagger / OpenAPI)
 
 | Método | Endpoint | Etiqueta | Descripción |
 | :--- | :--- | :--- | :--- |
@@ -226,7 +226,7 @@ python backend/app.py
 
 ---
 
-## 📋 Historias de Usuario con Responsable Asignado
+##  Historias de Usuario con Responsable Asignado
 
 Cada integrante del equipo responde por un conjunto definido de historias de usuario trabajadas y entregadas:
 
@@ -243,7 +243,7 @@ Cada integrante del equipo responde por un conjunto definido de historias de usu
 
 ---
 
-## 🧪 Pruebas Automatizadas (Unitarias y Playwright E2E)
+##  Pruebas Automatizadas (Unitarias y Playwright E2E)
 
 El proyecto cuenta con dos suites de pruebas automatizadas:
 
@@ -280,12 +280,12 @@ tests/test_playwright_e2e.py::test_e2e_navegacion_pestanas PASSED
 
 ---
 
-## 🔄 Flujo Completo de Prueba (Frontend ⟷ Backend ⟷ Base de Datos)
+##  Flujo Completo de Prueba (Frontend ⟷ Backend ⟷ Base de Datos)
 
 Para garantizar la comunicación integral entre los tres componentes:
 1. Ingrese a la aplicación web en [http://localhost:80](http://localhost:80).
-2. Diríjase a la pestaña **"🔄 Flujo de Prueba E2E"**.
-3. Haga clic en **"▶️ Ejecutar Flujo Completo"**.
+2. Diríjase a la pestaña **" Flujo de Prueba E2E"**.
+3. Haga clic en **" Ejecutar Flujo Completo"**.
 4. La aplicación ejecutará en vivo:
    - **Paso 1:** Petición HTTP desde el Frontend hacia la API del Backend (`POST /api/v1/flujo-prueba`).
    - **Paso 2:** El Backend genera un solicitante de prueba y lo inserta en la base de datos PostgreSQL.
@@ -295,7 +295,7 @@ Para garantizar la comunicación integral entre los tres componentes:
 
 ---
 
-## 📄 Reglas de Negocio Financieras Aplicadas
+##  Reglas de Negocio Financieras Aplicadas
 
 1. **Tasa de Interés de Referencia:**
    - Tasa Efectiva Anual (TEA): **24.78%** (Banco de la República 2025).
