@@ -31,4 +31,6 @@ Desktop.ini
 htmlcov/
 
 #Informacion sensible
-secret_config.py
+secret_config.py 
+# Archivos temporales de Office
+~$*

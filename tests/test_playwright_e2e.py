@@ -6,11 +6,15 @@ import pytest
 from playwright.sync_api import sync_playwright, expect
 from flask import send_from_directory
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend")))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend", "src")))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 
-from backend.app import app
+try:
+    from backend.app import app
+except ImportError:
+    from app import app
 
 # Configurar Flask para servir el frontend estático durante la prueba E2E
 frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend", "src"))

@@ -123,3 +123,6 @@ class ControladorSolicitante:
             port=port
         )
         return connection.cursor()
+
+# Alias para compatibilidad de importaciones legadas
+controlador_solicitante = ControladorSolicitante
