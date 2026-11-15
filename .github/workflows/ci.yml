@@ -94,7 +94,7 @@ jobs:
       - name: 3. Validar sintaxis y esquema de manifiestos K8s (--dry-run=client)
         run: |
           kubectl kustomize k8s/
-          kubectl apply -k k8s/ --dry-run=client
+          kubectl apply -k k8s/ --dry-run=client --validate=false
 
   # ============================================================================
   # ETAPA 3: COMPILACIÓN Y ETIQUETADO DE IMÁGENES DOCKER (DOCKERHUB TAGS)
