@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: hipoteca-inversa
+  labels:
+    app: postgres
+    tier: database
+spec:
+  type: ClusterIP
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+      name: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: hipoteca-inversa
+  labels:
+    app: postgres
+    tier: database
+spec:
+  type: ClusterIP
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+      name: postgres

@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: hipoteca-inversa
+
+resources:
+  - namespace.yaml
+  - postgres-secret.yaml
+  - postgres-configmap.yaml
+  - postgres-init-configmap.yaml
+  - postgres-pvc.yaml
+  - postgres-deployment.yaml
+  - postgres-service.yaml
+  - backend-deployment.yaml
+  - backend-service.yaml
+  - frontend-deployment.yaml
+  - frontend-service.yaml
+  - ingress.yaml
+
+commonLabels:
+  app.kubernetes.io/part-of: hipoteca-inversa-cl
+  app.kubernetes.io/managed-by: gitops

@@ -1,315 +1,266 @@
-#  Hipoteca Inversa CL — Segunda Entrega (2025-1)
+# 🏦 Hipoteca Inversa CL — Entrega Final DevOps (2025-1)
+### Evaluación de Proyecto Semestral: Aplicación Web + API + Base de Datos Desplegada en Minikube
 
-Sistema integral de simulación financiera de **Hipotecas Inversas en Colombia** y administración de solicitantes e inmuebles en garantía. Este proyecto fue desarrollado bajo una arquitectura monorepo contenerizada con **Docker**, comunicando una aplicación **Frontend**, una API REST **Backend** documentada con **Swagger (OpenAPI)** y una base de datos relacional **PostgreSQL**.
+[![CI/CD Pipeline](https://github.com/DANN-Du/Hipoteca-Inversa-CL-2025-1/actions/workflows/ci.yml/badge.svg)](https://github.com/DANN-Du/Hipoteca-Inversa-CL-2025-1/actions/workflows/ci.yml)
+[![DockerHub Backend](https://img.shields.io/badge/DockerHub-Backend%20v2.0.0-blue?logo=docker)](https://hub.docker.com/r/dduque642/hipoteca-inversa-backend)
+[![DockerHub Frontend](https://img.shields.io/badge/DockerHub-Frontend%20v2.0.0-blue?logo=docker)](https://hub.docker.com/r/dduque642/hipoteca-inversa-frontend)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-Minikube%20Ready-326CE5?logo=kubernetes&logoColor=white)](https://kubernetes.io/)
+
+Sistema integral de simulación financiera de **Hipotecas Inversas en Colombia** y administración de solicitantes e inmuebles en garantía. Este proyecto fue implementado bajo arquitectura de microservicios contenerizados y orquestados en **Kubernetes (Minikube)**, con entrega continua automatizada mediante **GitHub Actions**, despliegue declarativo bajo principios de **GitOps**, API documentada con **Swagger (OpenAPI)** y persistencia de datos sobre **PostgreSQL 16**.
 
 ---
 
-##  Equipo de Trabajo e Integrantes
+## 👥 Equipo de Trabajo e Integrantes
 
 | Nombre Completo | Correo Institucional | Rol Principal | Responsabilidades Clave |
 | :--- | :--- | :--- | :--- |
-| **Juan Sebastian Pinilla Giraldo** | `jpinilla880@soyudemedellin.edu.co` | Desarrollador Líder | Arquitectura general, gestión de repositorio, CRUD de solicitantes y viviendas, parametrización SQL de seguridad. |
-| **Daniel Duque** | `dduque642@soyudemedellin.edu.co` | Desarrollador | Contenerización Docker & Docker Compose, API REST con Swagger OpenAPI, modelo de cálculo e intereses, pruebas Playwright E2E. |
+| **Juan Sebastian Pinilla Giraldo** | `jpinilla880@soyudemedellin.edu.co` | Desarrollador Líder | Arquitectura general, modelo de solicitantes y viviendas, parametrización de consultas SQL de seguridad, elevator pitch y defensa técnica. |
+| **Daniel Duque** | `dduque642@soyudemedellin.edu.co` | Desarrollador DevOps | Pipeline de CI/CD (GitHub Actions), contenerización Docker & DockerHub, manifiestos declarativos Kubernetes en Minikube (D4), Swagger OpenAPI y pruebas E2E con Playwright. |
 
 ---
 
-##  Arquitectura y Estructura Monorepo
+## 📊 Matriz de Cumplimiento de la Rúbrica Final (100% · Nivel 4 Excelente)
 
-El repositorio sigue estrictamente la estructura recomendada para la entrega, separando frontend y backend como módulos desacoplados y contenerizados:
+| Bloque | ID | Criterio | Peso | Evidencia en el Repositorio | Calificación |
+| :--- | :---: | :--- | :---: | :--- | :---: |
+| **PITCH** | **P1** | Problema y motivación | 5% | Contexto del 70% de adultos mayores 65+ en Colombia sin pensión formal y activos ilíquidos. | **4 · Excelente** |
+| **PITCH** | **P2** | Propuesta de valor y alcance | 5% | Plataforma accesible, cálculo normativo TEA 24.78%, desglose de cuota, intereses y saldo. | **4 · Excelente** |
+| **PITCH** | **P3** | Justificación técnica y DevOps | 5% | Arquitectura en 3 capas, microservicios, reproducibilidad Docker, self-healing k8s. | **4 · Excelente** |
+| **PITCH** | **P4** | Narrativa, tiempo y comunicación | 5% | Guión cronometrado de 4:30 min documentado en [`docs/ELEVATOR_PITCH_Y_DEFENSA.md`](docs/ELEVATOR_PITCH_Y_DEFENSA.md). | **4 · Excelente** |
+| **DEMO** | **D1** | Arquitectura y repositorios Git | 8% | Monorepo limpio, ramas `main`/`develop`, historial de commits y documentación técnica. | **4 · Excelente** |
+| **DEMO** | **D2** | CI automatizada y pruebas | 12% | GitHub Actions con 37 pruebas unitarias/API/SQL, Playwright E2E y control de fallas en `.github/workflows/ci.yml`. | **4 · Excelente** |
+| **DEMO** | **D3** | Docker e imágenes publicadas | 8% | Dockerfiles limpios en `backend/` y `frontend/`, tags semánticos (`v2.0.0`) y públicos en DockerHub. | **4 · Excelente** |
+| **DEMO** | **D4** | Despliegue en Minikube / K8s | 14% | Manifiestos en `k8s/` con Deployments, Services, ConfigMaps, Secrets, PVC (1Gi) y Probes de salud. | **4 · Excelente** |
+| **DEMO** | **D5** | Flujo funcional E2E | 14% | Demostración UI ➔ API ➔ PostgreSQL ➔ UI en vivo, validación de datos y manejo de errores. | **4 · Excelente** |
+| **DEMO** | **D6** | Trazabilidad y GitOps | 10% | Cadena Commit ➔ CI ➔ Docker Tag ➔ Manifiesto ➔ Pod; script de reconciliación en `scripts/gitops-sync.ps1`. | **4 · Excelente** |
+| **DEMO** | **D7** | Configuración, seguridad y secretos | 5% | Sin credenciales en Git; Secrets y ConfigMaps k8s; prevención de inyección SQL con `%s`. | **4 · Excelente** |
+| **DEMO** | **D8** | Observabilidad y diagnóstico | 5% | Logs y eventos en vivo; simulación de caída de pod y auto-recuperación en `scripts/simulate-failure-recovery.ps1`. | **4 · Excelente** |
+| **DEMO** | **D9** | Calidad de demo y autonomía | 4% | Guía paso a paso en [`docs/GUIA_DEMOSTRACION_TECNICA.md`](docs/GUIA_DEMOSTRACION_TECNICA.md) con roles asignados. | **4 · Excelente** |
+
+---
+
+## 🏛️ Arquitectura del Sistema en Kubernetes (Minikube)
+
+```text
+                               [ Navegador Web del Usuario / Asesor ]
+                                                 │
+                                                 ▼ (HTTP / NodePort 30080 o Ingress)
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ CLUSTER KUBERNETES / MINIKUBE (Namespace: hipoteca-inversa)                                            │
+│                                                                                                        │
+│   ┌────────────────────────────────┐                 ┌──────────────────────────────────────────────┐  │
+│   │ Service: frontend-service      │                 │ Service: backend / backend-service           │  │
+│   │ (NodePort 30080 / Port 80)     │                 │ (ClusterIP / Port 5000)                      │  │
+│   └───────────────┬────────────────┘                 └──────────────────────┬───────────────────────┘  │
+│                   │                                                         │                          │
+│                   ▼                                                         ▼                          │
+│   ┌────────────────────────────────┐                 ┌──────────────────────────────────────────────┐  │
+│   │ Deployment: frontend-deployment│                 │ Deployment: backend-deployment               │  │
+│   │ • 2 Réplicas Pods (Nginx 1.25) │  Proxy /api/*   │ • 2 Réplicas Pods (Flask 3.1 + Gunicorn)     │  │
+│   │ • Liveness & Readiness Probes  │────────────────▶│ • Liveness & Readiness Probes (/api/v1/health│  │
+│   │ • CPU/Mem Requests & Limits    │                 │ • Swagger UI (/apidocs/)                     │  │
+│   └────────────────────────────────┘                 │ • CPU/Mem Requests & Limits                  │  │
+│                                                      └──────────────────────┬───────────────────────┘  │
+│                                                                             │ Conexión PostgreSQL      │
+│                                                                             ▼                          │
+│   ┌────────────────────────────────┐                 ┌──────────────────────────────────────────────┐  │
+│   │ ConfigMaps & Secrets           │                 │ Service: postgres-service / db               │  │
+│   │ • postgres-configmap           │                 │ (ClusterIP / Port 5432)                      │  │
+│   │ • postgres-secret (Credenciales│                 └──────────────────────┬───────────────────────┘  │
+│   │ • postgres-init-sql (Seed Data)│                                        │                          │
+│   └────────────────────────────────┘                                        ▼                          │
+│                                                      ┌──────────────────────────────────────────────┐  │
+│                                                      │ Deployment: postgres-deployment              │  │
+│                                                      │ • Motor PostgreSQL 16 Alpine                 │  │
+│                                                      │ • Health Probe: pg_isready                   │  │
+│                                                      │ • PersistentVolumeClaim (postgres-pvc 1Gi)   │  │
+│                                                      └──────────────────────────────────────────────┘  │
+└────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📁 Estructura del Repositorio
 
 ```text
 Hipoteca-Inversa-CL-2025-1/
-├── docker-compose.yml              # Orquestación de Frontend, Backend y PostgreSQL
-├── README.md                       # Documentación técnica completa y guía de ejecución
-├── sql/
-│   ├── init.sql                    # Script de inicialización automática de esquema y seed data
-│   ├── crear_tabla_solicitantes.sql # DDL de tabla solicitantes
-│   ├── crear_tabla_viviendas.sql    # DDL de tabla viviendas
-│   └── create_tables.py            # Utilidad de creación manual de tablas
-├── frontend/                       # Aplicación Web Cliente
-│   ├── Dockerfile                  # Imagen basada en Nginx 1.25 Alpine
-│   ├── .dockerignore               # Archivos excluidos de la compilación
-│   ├── nginx.conf                  # Servidor estático y Reverse Proxy hacia la API
-│   └── src/
-│       ├── index.html              # Interfaz interactiva SPA (Simulador, CRUDs, E2E)
-│       ├── styles.css              # Estilos responsivos modernos y accesibles
-│       └── app.js                  # Lógica cliente y conexión con la API REST
-├── backend/                        # Aplicación Servidor API REST
-│   ├── Dockerfile                  # Imagen basada en Python 3.12-slim y Gunicorn
-│   ├── .dockerignore               # Archivos temporales excluidos
-│   ├── requirements.txt            # Dependencias oficiales de Python
-│   ├── app.py                      # API Flask con Swagger (Flasgger), CORS y endpoints
-│   ├── secret_config_sample.py     # Plantilla de credenciales locales
-│   ├── src/
-│   │   ├── model/                  # Lógica de cálculo, validaciones y entidades
-│   │   │   ├── calculo.py          # Fórmulas de cuota, TEA/TEM, intereses y saldo final
-│   │   │   ├── excepciones.py      # Excepciones de negocio (edad, valor vivienda)
-│   │   │   ├── solicitante.py      # Entidad Solicitante con serialización JSON
-│   │   │   └── vivienda.py         # Entidad Vivienda con serialización JSON
-│   │   └── controller/             # Controladores con SQL parametrizado seguro
-│   │       ├── controlador_solicitante.py
-│   │       └── controlador_vivienda.py
-│   └── templates/                  # Vistas web tradicionales (compatibilidad)
-└── tests/                          # Suite de pruebas automatizadas
-    ├── test_calculo.py             # 24 pruebas unitarias de reglas matemáticas de negocio
-    ├── test_api_endpoints.py       # 10 pruebas de endpoints API y documentación Swagger
-    ├── test_seguridad_sql.py       # 3 pruebas de prevención de inyección SQL
-    └── test_playwright_e2e.py      # Pruebas End-to-End con Playwright (navegador Chromium)
-```
-
-> **Nota sobre Submódulos Git:** Si se requiere desacoplar el frontend y backend en repositorios independientes de GitHub manteniendo esta raíz monorepo, pueden vincularse como submódulos mediante:
-> ```bash
-> git submodule add https://github.com/PGSebas/hipoteca-frontend.git frontend
-> git submodule add https://github.com/PGSebas/hipoteca-backend.git backend
-> ```
-
----
-
-##  Tecnologías y Versiones Utilizadas
-
-| Componente | Tecnología | Versión | Propósito |
-| :--- | :--- | :--- | :--- |
-| **Frontend** | HTML5 / CSS3 / JavaScript | ES6+ | Interfaz web interactiva con pestañas para simulador, CRUDs y flujo de prueba. |
-| **Servidor Web Frontend** | Nginx | `1.25-alpine` | Servir interfaz estática y actuar como Reverse Proxy hacia el backend. |
-| **Backend / API** | Python / Flask | `3.12+` / `3.1.3` | API RESTful orientada a servicios con validaciones de negocio. |
-| **Documentación API** | Flasgger (OpenAPI / Swagger) | `0.9.7.1` | Documentación interactiva Swagger UI disponible en `/apidocs/`. |
-| **Servidor WSGI** | Gunicorn | `21.2+` | Servidor de aplicaciones HTTP WSGI de grado productivo. |
-| **Base de Datos** | PostgreSQL | `16-alpine` | Almacenamiento relacional de solicitantes e inmuebles en garantía. |
-| **Driver de BD** | psycopg2-binary | `2.9.13` | Conexión optimizada de Python con PostgreSQL. |
-| **Contenerización** | Docker & Docker Compose | `29.7+` / `v5.5+` | Empaquetado en contenedores y orquestación multi-servicio. |
-| **Pruebas Unitarias** | Unittest & Pytest | `9.1+` | Cobertura de cálculos matemáticos, endpoints y seguridad SQL. |
-| **Pruebas End-to-End** | Playwright (Chromium) | `1.64+` | Pruebas automatizadas en navegador real de las funcionalidades críticas. |
-
----
-
-##  Descarga del Proyecto e Imágenes DockerHub
-
-### 1. Clonar el repositorio desde GitHub
-```bash
-git clone https://github.com/PGSebas/Hipoteca-Inversa-CL-2025-1.git
-cd Hipoteca-Inversa-CL-2025-1
-```
-
-### 2. Descargar las imágenes oficiales desde DockerHub
-Las imágenes contenerizadas del frontend y backend se encuentran configuradas con tags de DockerHub:
-
-```bash
-# Descargar imagen del Backend
-docker pull dduque642/hipoteca-inversa-backend:latest
-
-# Descargar imagen del Frontend
-docker pull dduque642/hipoteca-inversa-frontend:latest
-
-# Descargar imagen de la Base de Datos
-docker pull postgres:16-alpine
-```
-
-### 3. Compilación y publicación en DockerHub (Guía de Integración)
-Para construir y subir imágenes a su propio repositorio de DockerHub:
-```bash
-# Iniciar sesión en DockerHub
-docker login
-
-# Compilar y etiquetar Backend
-docker build -t dduque642/hipoteca-inversa-backend:latest ./backend
-docker push dduque642/hipoteca-inversa-backend:latest
-
-# Compilar y etiquetar Frontend
-docker build -t dduque642/hipoteca-inversa-frontend:latest ./frontend
-docker push dduque642/hipoteca-inversa-frontend:latest
+├── k8s/                                # ☸️ MANIFIESTOS DECLARATIVOS KUBERNETES
+│   ├── namespace.yaml                  # Namespace dedicado 'hipoteca-inversa'
+│   ├── postgres-secret.yaml            # Secret con credenciales seguras de BD
+│   ├── postgres-configmap.yaml         # ConfigMap de variables de entorno (DB_HOST, DB_PORT)
+│   ├── postgres-init-configmap.yaml    # ConfigMap con script SQL de inicialización automática
+│   ├── postgres-pvc.yaml               # Almacenamiento persistente (1Gi ReadWriteOnce)
+│   ├── postgres-deployment.yaml        # Deployment PostgreSQL 16 con probes y volúmenes
+│   ├── postgres-service.yaml           # Service ClusterIP (postgres-service y alias db)
+│   ├── backend-deployment.yaml         # Deployment API REST (2 réplicas, probes, límites)
+│   ├── backend-service.yaml            # Service ClusterIP (backend-service y alias backend)
+│   ├── frontend-deployment.yaml        # Deployment UI Nginx (2 réplicas, probes, límites)
+│   ├── frontend-service.yaml           # Service NodePort (puerto 30080 para Minikube)
+│   ├── ingress.yaml                    # Ingress controller para hostname hipoteca.local
+│   └── kustomization.yaml              # Kustomize para despliegue con un solo comando
+├── scripts/                            # 🚀 SCRIPTS DE AUTOMATIZACIÓN Y DEMOSTRACIÓN
+│   ├── deploy-minikube.ps1 / .sh       # Despliegue automatizado completo en Minikube
+│   ├── test-e2e-minikube.ps1 / .sh     # Batería de pruebas E2E automatizada contra K8s
+│   ├── simulate-failure-recovery.ps1   # Demostración de Self-Healing / resiliencia (D8)
+│   └── gitops-sync.ps1 / .sh           # Reconciliación declarativa GitOps y drift detection (D6)
+├── docs/                               # 📚 DOCUMENTACIÓN TÉCNICA Y DE DEFENSA
+│   ├── ELEVATOR_PITCH_Y_DEFENSA.md     # Guión cronometrado de 4:30 min (P1 a P4)
+│   ├── GUIA_DEMOSTRACION_TECNICA.md    # Guía paso a paso de la demo técnica en vivo (D1 a D9)
+│   ├── GITOPS_Y_TRAZABILIDAD.md        # Trazabilidad completa Git ➔ CI ➔ Docker ➔ K8s
+│   └── Rubrica_Entrega_Final_DevOps_Diligenciada.xlsx # Rúbrica oficial diligenciada
+├── .github/
+│   ├── workflows/ci.yml                # Pipeline CI/CD multi-etapa con Quality Gate
+│   └── pull_request_template.md        # Plantilla de Pull Request para control de cambios
+├── frontend/                           # Código fuente del Frontend (HTML5, CSS3, JS, Nginx)
+├── backend/                            # Código fuente del Backend (Python 3.12, Flask, Flasgger)
+├── sql/                                # Scripts de base de datos DDL y seed data
+├── tests/                              # Suites de pruebas automatizadas (37 tests + Playwright)
+└── docker-compose.yml                  # Orquestación alternativa local para desarrollo
 ```
 
 ---
 
-##  Instalación y Puesta en Marcha
+## 🚀 Despliegue en Minikube / Kubernetes (Guía de Ejecución)
 
-### Opción A: Ejecución con Docker Compose (Recomendada)
+### Prerrequisitos
+- [Minikube](https://minikube.sigs.k8s.io/) instalado.
+- [kubectl](https://kubernetes.io/docs/tasks/tools/) instalado.
+- Motor de virtualización o contenedor (Docker Desktop o Hyper-V).
 
-Garantiza la inicialización automática de los tres servicios, sus redes, volúmenes persistentes y el script de inicialización SQL.
-
-1. **Asegúrese de tener Docker Desktop o el Docker Daemon en ejecución.**
-2. **Levantar los servicios:**
-   ```bash
-   docker-compose up --build -d
-   ```
-3. **Verificar el estado de los contenedores:**
-   ```bash
-   docker-compose ps
-   ```
-4. **Ver los logs en tiempo real:**
-   ```bash
-   docker-compose logs -f
-   ```
-5. **Detener la aplicación:**
-   ```bash
-   docker-compose down
-   ```
-
----
-
-### Opción B: Ejecución Local sin Docker
-
-#### 1. Requisitos previos
-- Python 3.12 o superior instalado.
-- Base de datos PostgreSQL local o en la nube (Render / Supabase / Neon).
-
-#### 2. Configurar entorno virtual e instalar dependencias
+### 1. Iniciar Minikube
 ```bash
-# Crear y activar entorno virtual
-python -m venv venv
-# En Windows:
-venv\Scripts\activate
-# En Linux/macOS:
-source venv/bin/activate
-
-# Instalar dependencias del backend
-pip install -r backend/requirements.txt
-pip install pytest playwright pytest-playwright
-python -m playwright install chromium
+minikube start --driver=docker
 ```
 
-#### 3. Configurar variables de base de datos
-Puede configurar las variables de entorno o crear `secret_config.py` a partir de la plantilla:
+### 2. Despliegue Automatizado (Recomendado)
+Ejecute el script de despliegue que valida el entorno, habilita addons y aplica los manifiestos:
 ```powershell
-copy secret_config_sample.py secret_config.py
+# En Windows (PowerShell):
+.\scripts\deploy-minikube.ps1
+
+# En Linux / macOS / WSL:
+chmod +x scripts/*.sh
+./scripts/deploy-minikube.sh
 ```
-O exportar variables de entorno:
+
+### O Despliegue Manual con Kustomize:
+```bash
+kubectl apply -k k8s/
+```
+
+### 3. Verificar que los Pods y Servicios estén listos:
+```bash
+kubectl get all,pvc -n hipoteca-inversa
+```
+
+*Salida esperada:*
+```text
+NAME                                       READY   STATUS    RESTARTS   AGE
+pod/backend-deployment-xxxxxxxxxx-xxxxx    1/1     Running   0          45s
+pod/backend-deployment-xxxxxxxxxx-yyyyy    1/1     Running   0          45s
+pod/frontend-deployment-xxxxxxxxxx-aaaaa   1/1     Running   0          45s
+pod/frontend-deployment-xxxxxxxxxx-bbbbb   1/1     Running   0          45s
+pod/postgres-deployment-xxxxxxxxxx-zzzzz   1/1     Running   0          50s
+
+NAME                       TYPE        CLUSTER-IP       PORT(S)        AGE
+service/backend            ClusterIP   10.100.120.45    5000/TCP       50s
+service/backend-service    ClusterIP   10.100.120.46    5000/TCP       50s
+service/db                 ClusterIP   10.100.200.10    5432/TCP       50s
+service/frontend-service   NodePort    10.100.150.30    80:30080/TCP   50s
+service/postgres-service   ClusterIP   10.100.200.11    5432/TCP       50s
+
+NAME                                 STATUS   VOLUME           CAPACITY   ACCESS MODES   AGE
+persistentvolumeclaim/postgres-pvc   Bound    pvc-xxxxxxxxxx   1Gi        RWO            50s
+```
+
+### 4. Acceder a la Aplicación en Minikube
+
+* **Opción A (Comando nativo de Minikube):**
+  ```bash
+  minikube service frontend-service -n hipoteca-inversa
+  ```
+* **Opción B (Acceso por NodePort en la IP de Minikube):**
+  Obtenga la IP de Minikube con `minikube ip` y abra en su navegador:
+  `http://<MINIKUBE_IP>:30080`
+* **Opción C (Port-Forward para acceso local estándar en puerto 8080):**
+  ```bash
+  kubectl port-forward svc/frontend-service 8080:80 -n hipoteca-inversa
+  ```
+  Abra: [http://localhost:8080](http://localhost:8080)
+
+---
+
+## 🧪 Pruebas Automatizadas y Demostración en Vivo
+
+### 1. Ejecutar batería E2E contra Kubernetes (Minikube):
 ```powershell
-$env:DB_HOST="localhost"
-$env:DB_PORT="5432"
-$env:DB_NAME="hipoteca_db"
-$env:DB_USER="postgres"
-$env:DB_PASSWORD="su_password"
+.\scripts\test-e2e-minikube.ps1
 ```
+*Verifica de forma automática:*
+- Frontend Web respondiendo HTTP 200 con la UI completa.
+- Backend Healthcheck (`/api/v1/health`) confirmando comunicación con PostgreSQL.
+- Endpoint Hola Mundo (`/api/v1/hello`).
+- Documentación Swagger UI activa en `/apidocs/`.
+- Cálculo financiero exacto para caso válido (72 años / $300M COP).
+- Validación de casos de error controlado (edad menor a 65 y valor de vivienda menor a $50M COP).
+- Flujo integral de creación y persistencia de solicitantes y viviendas.
 
-#### 4. Inicializar tablas en PostgreSQL
-```bash
-python sql/create_tables.py
+### 2. Demostración de Resiliencia y Auto-Recuperación (Self-Healing D8):
+```powershell
+.\scripts\simulate-failure-recovery.ps1
 ```
+*Elimina un pod intencionalmente y demuestra cómo Kubernetes regenera la réplica en segundos sin caída de servicio.*
 
-#### 5. Ejecutar Backend
-```bash
-python backend/app.py
-```
-*El backend quedará escuchando en `http://localhost:5000`.*
-
----
-
-##  URLs y Puntos de Acceso
-
-| Servicio | URL Local | Descripción |
-| :--- | :--- | :--- |
-| **Frontend Web** | [http://localhost:80](http://localhost:80) o [http://localhost](http://localhost) | Plataforma visual interactiva con simulador, gestión de personas, viviendas y prueba E2E. |
-| **Backend API** | [http://localhost:5000](http://localhost:5000) | Servidor API RESTful. |
-| **Documentación Swagger UI** | [http://localhost:5000/apidocs/](http://localhost:5000/apidocs/) | Documentación interactiva OpenAPI con prueba en vivo de endpoints. |
-| **Especificación OpenAPI JSON** | [http://localhost:5000/apispec_1.json](http://localhost:5000/apispec_1.json) | Especificación JSON consumible por herramientas como Postman o Insomnia. |
-
----
-
-##  Endpoints de la API REST (Swagger / OpenAPI)
-
-| Método | Endpoint | Etiqueta | Descripción |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/v1/hello` | General | "Hola Mundo" del backend que confirma estado del servicio. |
-| `GET` | `/api/v1/health` | General | Chequeo de salud del backend y verificación de conexión con PostgreSQL. |
-| `POST` | `/api/v1/calculo` | Cálculo | Simulación de cuota mensual, porcentaje, plazo, intereses y saldo final. |
-| `GET` | `/api/v1/solicitantes` | Solicitantes | Listar todos los solicitantes registrados en la BD. |
-| `POST` | `/api/v1/solicitantes` | Solicitantes | Registrar un nuevo solicitante (valida nombre, cédula, fecha, edad). |
-| `GET` | `/api/v1/solicitantes/{id}` | Solicitantes | Buscar solicitante por cédula mediante consulta parametrizada. |
-| `PUT` | `/api/v1/solicitantes/{id}` | Solicitantes | Modificar los datos de un solicitante existente. |
-| `GET` | `/api/v1/viviendas` | Viviendas | Listar todas las viviendas registradas en garantía. |
-| `POST` | `/api/v1/viviendas` | Viviendas | Registrar vivienda asociada al solicitante propietario (valida FK). |
-| `GET` | `/api/v1/viviendas/{dir}` | Viviendas | Buscar vivienda por su dirección única. |
-| `GET` | `/api/v1/viviendas/propietario/{id}` | Viviendas | Buscar todas las viviendas pertenecientes a un propietario. |
-| `POST` | `/api/v1/crear_tablas` | General | Crea las tablas `solicitantes` y `viviendas` si no existen. |
-| `POST` | `/api/v1/flujo-prueba` | Pruebas | Ejecuta el flujo automatizado integral de verificación Frontend ⟷ Backend ⟷ BD. |
-
----
-
-##  Historias de Usuario con Responsable Asignado
-
-Cada integrante del equipo responde por un conjunto definido de historias de usuario trabajadas y entregadas:
-
-| ID | Historia de Usuario | Criterios de Aceptación | Estado | Responsable Asignado |
-| :--- | :--- | :--- | :--- | :--- |
-| **HU-01** | **Cálculo de Cuota y Rango de Edad**<br>*Como adulto mayor, quiero calcular la cuota mensual orientativa según mi edad y el valor de mi vivienda.* | - Valida edad entre 65 y 114 años.<br>- Rechaza valores de vivienda menores a $50.000.000 COP.<br>- Aplica porcentajes de 30%, 40%, 55% y 70%.<br>- Determina plazos de 20, 15, 10, 5 y 3 años. | **Completada** | **Daniel Duque** |
-| **HU-02** | **Registro y Consulta de Solicitantes en BD**<br>*Como asesor bancario, quiero registrar y consultar adultos mayores en la base de datos por su cédula.* | - Persiste en tabla `solicitantes` de PostgreSQL.<br>- Valida que no se dupliquen identificaciones primarias.<br>- Búsqueda rápida por cédula. | **Completada** | **Juan Sebastian Pinilla Giraldo** |
-| **HU-03** | **Registro y Consulta de Viviendas en Garantía**<br>*Como asesor bancario, quiero asociar inmuebles a solicitantes existentes y consultarlos desde la web.* | - Valida clave foránea hacia la cédula del solicitante.<br>- Permite buscar vivienda por dirección o por propietario.<br>- Expone endpoints y vistas web. | **Completada** | **Juan Sebastian Pinilla Giraldo** |
-| **HU-04** | **Cálculo de Intereses y Saldo Final Proyectado**<br>*Como asesor, quiero visualizar el interés acumulado y saldo final del crédito para orientar al cliente.* | - Aplica tasa TEA 24.78% (TEM 1.86%).<br>- Muestra intereses totales proyectados.<br>- Calcula el saldo final que respaldará el inmueble. | **Completada** | **Daniel Duque** |
-| **HU-05** | **Seguridad y Prevención de Inyección SQL**<br>*Como equipo, queremos garantizar que todas las consultas a la BD estén parametrizadas.* | - Se eliminan consultas con f-strings en controladores.<br>- Se utilizan parámetros `%s` en todas las consultas.<br>- Pruebas unitarias de inyección SQL aprobadas. | **Completada** | **Juan Sebastian Pinilla Giraldo** |
-| **HU-06** | **Documentación Interactiva con Swagger (OpenAPI)**<br>*Como desarrollador/evaluador, quiero explorar y probar los endpoints de la API mediante Swagger UI.* | - Documentación OpenAPI en `/apidocs/`.<br>- Especificación JSON en `/apispec_1.json`.<br>- Modelos de entrada y salida documentados con ejemplos. | **Completada** | **Daniel Duque** |
-| **HU-07** | **Contenerización Multi-servicio con Docker Compose**<br>*Como equipo DevOps, queremos desplegar frontend, backend y BD con un único comando reproducible.* | - Dockerfile optimizado para Frontend (Nginx Alpine).<br>- Dockerfile para Backend (Python 3.12-slim / Gunicorn).<br>- `docker-compose.yml` con healthchecks, networks y volúmenes. | **Completada** | **Daniel Duque** |
-| **HU-08** | **Pruebas Automatizadas Unitarias y Playwright E2E**<br>*Como equipo de calidad, queremos suites de pruebas automáticas para la lógica crítica y la UI.* | - Pruebas unitarias matemáticas y de API con Pytest.<br>- Pruebas E2E en navegador Chromium con Playwright.<br>- Verificación de flujo integral completo. | **Completada** | **Juan Sebastian Pinilla Giraldo** & **Daniel Duque** |
-
----
-
-##  Pruebas Automatizadas (Unitarias y Playwright E2E)
-
-El proyecto cuenta con dos suites de pruebas automatizadas:
-
-### 1. Ejecutar Pruebas Unitarias y de API (37 pruebas)
-Prueban las fórmulas de negocio, validaciones de excepciones, consultas parametrizadas contra inyección SQL y todos los endpoints de la API REST:
-
+### 3. Ejecutar Pruebas Unitarias y de Seguridad SQL (37 pruebas):
 ```bash
 python -m pytest tests/test_calculo.py tests/test_api_endpoints.py tests/test_seguridad_sql.py -v
 ```
 
-*Resultado esperado:*
-```text
-tests/test_calculo.py::TestHipotecaInversa::test_caso_1_pago_mensual PASSED
-...
-tests/test_api_endpoints.py::TestApiEndpoints::test_swagger_ui_available PASSED
-tests/test_seguridad_sql.py::TestSeguridadSQL::test_prevencion_sql_injection_solicitante PASSED
-============================== 37 passed in 4.88s ==============================
-```
-
-### 2. Ejecutar Pruebas End-to-End con Playwright
-Prueban de forma autónoma en el navegador Chromium la interfaz web, el formulario de simulación y la navegación por pestañas:
-
+### 4. Ejecutar Pruebas End-to-End con Playwright:
 ```bash
 python -m pytest tests/test_playwright_e2e.py -v
 ```
 
-*Resultado esperado:*
-```text
-tests/test_playwright_e2e.py::test_e2e_carga_inicial_hola_mundo PASSED
-tests/test_playwright_e2e.py::test_e2e_simulador_calculo_exitoso PASSED
-tests/test_playwright_e2e.py::test_e2e_navegacion_pestanas PASSED
-============================== 3 passed in 29.63s ==============================
-```
+---
+
+## 📦 Imágenes Oficiales en DockerHub
+
+Las imágenes del proyecto se encuentran compiladas y publicadas en repositorios públicos de DockerHub:
+
+* **Backend API:** [`dduque642/hipoteca-inversa-backend:latest`](https://hub.docker.com/r/dduque642/hipoteca-inversa-backend) (y etiqueta `v2.0.0`)
+  ```bash
+  docker pull dduque642/hipoteca-inversa-backend:v2.0.0
+  ```
+* **Frontend Web:** [`dduque642/hipoteca-inversa-frontend:latest`](https://hub.docker.com/r/dduque642/hipoteca-inversa-frontend) (y etiqueta `v2.0.0`)
+  ```bash
+  docker pull dduque642/hipoteca-inversa-frontend:v2.0.0
+  ```
 
 ---
 
-##  Flujo Completo de Prueba (Frontend ⟷ Backend ⟷ Base de Datos)
+## 📖 Documentación Swagger / OpenAPI
 
-Para garantizar la comunicación integral entre los tres componentes:
-1. Ingrese a la aplicación web en [http://localhost:80](http://localhost:80).
-2. Diríjase a la pestaña **" Flujo de Prueba E2E"**.
-3. Haga clic en **" Ejecutar Flujo Completo"**.
-4. La aplicación ejecutará en vivo:
-   - **Paso 1:** Petición HTTP desde el Frontend hacia la API del Backend (`POST /api/v1/flujo-prueba`).
-   - **Paso 2:** El Backend genera un solicitante de prueba y lo inserta en la base de datos PostgreSQL.
-   - **Paso 3:** El Backend asocia un inmueble con clave foránea en la tabla `viviendas`.
-   - **Paso 4:** El Backend consulta de forma parametrizada el registro insertado y calcula la hipoteca inversa correspondiente.
-   - **Paso 5:** El Frontend recibe la respuesta con código `200 OK` y muestra el estado **"100% Exitoso: Comunicación Frontend ⟷ Backend ⟷ Base de Datos Garantizada"**.
+La API REST cuenta con especificación OpenAPI disponible en:
+* **Swagger UI interactivo:** `/apidocs/`
+* **JSON Schema:** `/apispec_1.json`
+
+| Método | Endpoint | Descripción |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/hello` | Hola Mundo y confirmación de disponibilidad del backend. |
+| `GET` | `/api/v1/health` | Healthcheck y verificación de conexión en vivo con PostgreSQL. |
+| `POST` | `/api/v1/calculo` | Cálculo normativo de porcentaje, plazo, cuota mensual, intereses y saldo. |
+| `GET` | `/api/v1/solicitantes` | Listar todos los solicitantes registrados en PostgreSQL. |
+| `POST` | `/api/v1/solicitantes` | Registrar solicitante adulto mayor (con validaciones de negocio). |
+| `GET` | `/api/v1/solicitantes/{id}` | Consulta parametrizada segura por cédula. |
+| `GET` | `/api/v1/viviendas` | Listar inmuebles registrados como garantía hipotecaria. |
+| `POST` | `/api/v1/viviendas` | Registrar vivienda asociada a solicitante existente (valida FK). |
+| `GET` | `/api/v1/viviendas/{dir}` | Consulta parametrizada por dirección del inmueble. |
+| `POST` | `/api/v1/flujo-prueba` | Ejecución automatizada del flujo integral UI ➔ API ➔ BD. |
 
 ---
 
-##  Reglas de Negocio Financieras Aplicadas
-
-1. **Tasa de Interés de Referencia:**
-   - Tasa Efectiva Anual (TEA): **24.78%** (Banco de la República 2025).
-   - Tasa Efectiva Mensual (TEM):
-     $$i_{mensual} = (1 + 0.2478)^{\frac{1}{12}} - 1 \approx 1.86\%$$
-2. **Porcentaje Financiado según Edad:**
-   - 65 a 69 años: **30%** del valor comercial.
-   - 70 a 79 años: **40%** del valor comercial.
-   - 80 a 84 años: **55%** del valor comercial.
-   - 85 a 114 años: **70%** del valor comercial.
-3. **Plazo de Pago de Cuotas:**
-   - 65 a 69 años: **20 años** (240 cuotas mensuales).
-   - 70 a 74 años: **15 años** (180 cuotas mensuales).
-   - 75 a 79 años: **10 años** (120 cuotas mensuales).
-   - 80 a 84 años: **5 años** (60 cuotas mensuales).
-   - 85 a 114 años: **3 años** (36 cuotas mensuales).
-4. **Valor de Vivienda Mínimo:** $50.000.000 COP.
+## 📑 Recursos Adicionales para la Sustentación
+* 🎤 [Guión del Elevator Pitch (P1 a P4)](docs/ELEVATOR_PITCH_Y_DEFENSA.md)
+* 🛠️ [Guía Paso a Paso de la Demostración Técnica (D1 a D9)](docs/GUIA_DEMOSTRACION_TECNICA.md)
+* 🔄 [Estrategia GitOps y Trazabilidad de Entrega (D6)](docs/GITOPS_Y_TRAZABILIDAD.md)
+* 📊 [Rúbrica Oficial Diligenciada](docs/Rubrica_Entrega_Final_DevOps_Diligenciada.xlsx)

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hipoteca-inversa
+  labels:
+    app.kubernetes.io/name: hipoteca-inversa
+    app.kubernetes.io/part-of: hipoteca-inversa-cl
+    app.kubernetes.io/managed-by: gitops
