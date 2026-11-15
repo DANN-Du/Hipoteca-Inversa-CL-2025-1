@@ -15,7 +15,7 @@ Esta guía contiene la secuencia exacta de pasos, comandos, explicaciones y cont
 | **D4: Despliegue en Minikube** | 14% | Pods saludables, Services, ConfigMaps, Secrets, PVC persistente y Probes. | `kubectl get all,pvc,secret -n hipoteca-inversa`, `deploy-minikube.ps1`. |
 | **D5: Flujo Funcional E2E** | 14% | Registro en UI ➔ Proceso en API ➔ Persistencia en BD ➔ Verificación y Error controlado. | Navegador web en vivo ([http://localhost:8080](http://localhost:8080) o Minikube IP). |
 | **D6: Trazabilidad y GitOps** | 10% | Commit SHA ➔ Pipeline CI ➔ Tag Docker ➔ Manifiesto k8s/ ➔ Pod ejecutando. | `git rev-parse HEAD`, `kubectl get pods -o jsonpath`. |
-| **D7: Seguridad y Secretos** | 5% | ConfigMaps para entorno, Secrets para contraseñas, consultas SQL parametrizadas. | `tests/test_seguridad_sql.py`, revisión de `postgres-secret.yaml`. |
+| **D7: Seguridad y Secretos** | 5% | ConfigMaps para entorno, Secrets para contraseñas, consultas SQL parametrizadas. | `tests/test_seguridad_sql.py`, `k8s/postgres-secret.env.example` + `secretGenerator` en `kustomization.yaml` (el `.env` real está en `.gitignore`). |
 | **D8: Observabilidad y Falla** | 5% | `kubectl logs`, `describe`, simulación de caída forzada de pod y auto-reparación. | `scripts/simulate-failure-recovery.ps1`. |
 | **D9: Calidad y Autonomía** | 4% | Dominio compartido del equipo, orden y respuestas claras a preguntas del docente. | Participación alternada de Juan Sebastian y Daniel. |
 

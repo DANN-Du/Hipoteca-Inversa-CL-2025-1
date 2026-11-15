@@ -25,6 +25,10 @@ ENV PYTHONUNBUFFERED=1 \
     PORT=5000 \
     PYTHONPATH=/app:/app/src
 
+# Ejecutar como usuario sin privilegios (no root)
+RUN useradd --create-home --uid 10001 appuser && chown -R appuser /app
+USER 10001
+
 EXPOSE 5000
 
 # Chequeo de salud del contenedor
