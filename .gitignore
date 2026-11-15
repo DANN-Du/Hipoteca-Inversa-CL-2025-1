@@ -35,5 +35,5 @@ secret_config.py
 # Archivos temporales de Office
 ~$*
 
-# Secret real de Kubernetes (usar k8s/postgres-secret.env.example como plantilla)
-k8s/postgres-secret.env
+# Secret real de Kubernetes (usar k8s/postgres-secret.example.yaml como plantilla)
+k8s/postgres-secret.yaml

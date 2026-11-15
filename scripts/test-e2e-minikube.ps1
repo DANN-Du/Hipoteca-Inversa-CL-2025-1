@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # Script de Prueba End-to-End (E2E) en Minikube / Kubernetes
 # Proyecto: Hipoteca Inversa CL - Demostración Técnica (D5 / D8)
 # ==============================================================================
@@ -77,7 +77,7 @@ Assert-Test "Documentación Swagger OpenAPI (/apidocs/ y /apispec_1.json)" {
 }
 
 # TEST 5: Simulación Financiera con Parámetros Válidos (72 años / $300M COP)
-Assert-Test "Cálculo Financiero de Hipoteca Inversa (Caso Válido: 72 años, $300M)" {
+Assert-Test "Cálculo Financiero de Hipoteca Inversa (Caso Válido: 72 años, `$300M)" {
     $body = @{ edad = 72; valor_vivienda = 300000000.0 } | ConvertTo-Json
     $res = Invoke-RestMethod -Uri "$BaseUrl/api/v1/calculo" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 10
     if ($res.porcentaje_financiado -ne 40) { throw "Porcentaje financiado incorrecto: $($res.porcentaje_financiado)" }
@@ -90,25 +90,29 @@ Assert-Test "Cálculo Financiero de Hipoteca Inversa (Caso Válido: 72 años, $3
 # TEST 6: Manejo Controlado de Error - Edad Menor a 65
 Assert-Test "Manejo Controlado de Error (Edad < 65 años -> HTTP 400)" {
     $body = @{ edad = 55; valor_vivienda = 200000000.0 } | ConvertTo-Json
+    # Compatible con PowerShell 5.1 (WebException) y 7+ (HttpResponseException)
     try {
-        $res = Invoke-WebRequest -Uri "$BaseUrl/api/v1/calculo" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 10
-        throw "La API debió rechazar la solicitud pero respondió HTTP $($res.StatusCode)"
-    } catch [System.Net.WebException] {
-        $resp = $_.Exception.Response
-        if ($resp.StatusCode.value__ -ne 400) { throw "Se esperaba código 400, recibido: $($resp.StatusCode)" }
+        $res = Invoke-WebRequest -Uri "$BaseUrl/api/v1/calculo" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 10 -UseBasicParsing
+        $code = [int]$res.StatusCode
+    } catch {
+        if ($null -eq $_.Exception.Response) { throw }
+        $code = [int]$_.Exception.Response.StatusCode
     }
+    if ($code -ne 400) { throw "Se esperaba código 400, recibido: $code" }
 }
 
 # TEST 7: Manejo Controlado de Error - Valor de Vivienda Menor a $50M COP
-Assert-Test "Manejo Controlado de Error (Valor < $50.000.000 COP -> HTTP 400)" {
+Assert-Test "Manejo Controlado de Error (Valor < `$50.000.000 COP -> HTTP 400)" {
     $body = @{ edad = 70; valor_vivienda = 25000000.0 } | ConvertTo-Json
+    # Compatible con PowerShell 5.1 (WebException) y 7+ (HttpResponseException)
     try {
-        $res = Invoke-WebRequest -Uri "$BaseUrl/api/v1/calculo" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 10
-        throw "La API debió rechazar la solicitud pero respondió HTTP $($res.StatusCode)"
-    } catch [System.Net.WebException] {
-        $resp = $_.Exception.Response
-        if ($resp.StatusCode.value__ -ne 400) { throw "Se esperaba código 400, recibido: $($resp.StatusCode)" }
+        $res = Invoke-WebRequest -Uri "$BaseUrl/api/v1/calculo" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 10 -UseBasicParsing
+        $code = [int]$res.StatusCode
+    } catch {
+        if ($null -eq $_.Exception.Response) { throw }
+        $code = [int]$_.Exception.Response.StatusCode
     }
+    if ($code -ne 400) { throw "Se esperaba código 400, recibido: $code" }
 }
 
 # TEST 8: Flujo Integral E2E de Comunicación (UI -> API -> PostgreSQL -> UI)

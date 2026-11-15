@@ -25,12 +25,12 @@ if command -v minikube &> /dev/null; then
     minikube addons enable metrics-server 2>/dev/null || true
 fi
 
-# 3. Preparar Secret local (k8s/postgres-secret.env no se versiona en Git)
-SECRET_FILE="k8s/postgres-secret.env"
+# 3. Preparar Secret local (k8s/postgres-secret.yaml no se versiona en Git)
+SECRET_FILE="k8s/postgres-secret.yaml"
 if [ ! -f "$SECRET_FILE" ]; then
     echo "🔐 Creando $SECRET_FILE con una contraseña aleatoria (no se sube a Git)..."
     PASS=$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 24 || true)
-    sed "s/CAMBIAR_ESTA_CONTRASENA/${PASS}/g" k8s/postgres-secret.env.example > "$SECRET_FILE"
+    sed "s/CAMBIAR_ESTA_CONTRASENA/${PASS}/g" k8s/postgres-secret.example.yaml > "$SECRET_FILE"
     echo "✅ Secret local creado. Si ya tenía datos en el PVC con otra contraseña, edite $SECRET_FILE."
 fi
 
@@ -51,9 +51,14 @@ kubectl apply -k k8s/
 
 # 6. Esperar rollout
 echo "⏳ Esperando que los despliegues estén listos..."
-kubectl rollout status deployment/postgres-deployment -n hipoteca-inversa --timeout=120s
-kubectl rollout status deployment/backend-deployment -n hipoteca-inversa --timeout=120s
-kubectl rollout status deployment/frontend-deployment -n hipoteca-inversa --timeout=120s
+for dep in postgres-deployment backend-deployment frontend-deployment; do
+    if ! kubectl rollout status "deployment/$dep" -n hipoteca-inversa --timeout=300s; then
+        echo "❌ $dep no quedó listo. Diagnóstico:"
+        echo "   kubectl describe pod -l app=${dep%-deployment} -n hipoteca-inversa"
+        kubectl get pods -n hipoteca-inversa
+        exit 1
+    fi
+done
 
 # 7. Estado general
 echo "=================================================================="

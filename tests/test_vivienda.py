@@ -1,7 +1,8 @@
 import unittest
 import sys
 from datetime import datetime
-sys.path.append( "src" )
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend", "src")))
 
 from model.vivienda import Vivienda
 from controller.controlador_vivienda import ControladorVivienda

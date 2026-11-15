@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # Script de Reconciliación Declarativa GitOps (D6)
 # Proyecto: Hipoteca Inversa CL
 # ==============================================================================
@@ -12,8 +12,8 @@ Write-Host "1️⃣  Fuente de Verdad (Git): Manifiestos versionados en carpeta 
 $currentCommit = (git rev-parse --short HEAD 2>$null)
 Write-Host "    Commit SHA activo: $currentCommit" -ForegroundColor Green
 
-if (-not (Test-Path "k8s/postgres-secret.env")) {
-    Write-Error "❌ Falta k8s/postgres-secret.env (no se versiona). Ejecute primero scripts/deploy-minikube.ps1."
+if (-not (Test-Path "k8s/postgres-secret.yaml")) {
+    Write-Error "❌ Falta k8s/postgres-secret.yaml (no se versiona). Ejecute primero scripts/deploy-minikube.ps1."
     exit 1
 }
 

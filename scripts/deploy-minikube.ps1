@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # Script de Despliegue Automatizado en Minikube / Kubernetes
 # Proyecto: Hipoteca Inversa CL - Entrega Final DevOps
 # ==============================================================================
@@ -35,13 +35,13 @@ try {
     Write-Host "ℹ️  Omitiendo addons si ya están configurados o en cluster remoto."
 }
 
-# 4. Preparar Secret local (k8s/postgres-secret.env no se versiona en Git)
-$secretFile = "k8s/postgres-secret.env"
+# 4. Preparar Secret local (k8s/postgres-secret.yaml no se versiona en Git)
+$secretFile = "k8s/postgres-secret.yaml"
 if (-not (Test-Path $secretFile)) {
     Write-Host "`n🔐 Creando $secretFile con una contraseña aleatoria (no se sube a Git)..." -ForegroundColor Yellow
     $chars = [char[]]"abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"
     $pass = -join (1..24 | ForEach-Object { $chars | Get-Random })
-    (Get-Content "k8s/postgres-secret.env.example") -replace "CAMBIAR_ESTA_CONTRASENA", $pass | Set-Content $secretFile
+    (Get-Content "k8s/postgres-secret.example.yaml") -replace "CAMBIAR_ESTA_CONTRASENA", $pass | Set-Content $secretFile
     Write-Host "✅ Secret local creado. Si ya tenía datos en el PVC con otra contraseña, edite $secretFile." -ForegroundColor Green
 }
 
@@ -68,14 +68,18 @@ Write-Host "✅ Manifiestos aplicados con éxito." -ForegroundColor Green
 # 7. Esperar Rollout de Recursos
 Write-Host "`n⏳ Esperando que los despliegues estén listos..." -ForegroundColor Yellow
 
-Write-Host "-> Despliegue PostgreSQL..."
-kubectl rollout status deployment/postgres-deployment -n hipoteca-inversa --timeout=120s
-
-Write-Host "-> Despliegue Backend API..."
-kubectl rollout status deployment/backend-deployment -n hipoteca-inversa --timeout=120s
-
-Write-Host "-> Despliegue Frontend Web..."
-kubectl rollout status deployment/frontend-deployment -n hipoteca-inversa --timeout=120s
+$fallos = @()
+foreach ($dep in @("postgres-deployment", "backend-deployment", "frontend-deployment")) {
+    Write-Host "-> $dep..."
+    kubectl rollout status deployment/$dep -n hipoteca-inversa --timeout=300s
+    if ($LASTEXITCODE -ne 0) { $fallos += $dep }
+}
+if ($fallos.Count -gt 0) {
+    Write-Host "`n❌ No quedaron listos: $($fallos -join ', ')" -ForegroundColor Red
+    Write-Host "   Diagnóstico: kubectl get pods -n hipoteca-inversa ; kubectl describe pod <pod> -n hipoteca-inversa ; kubectl get events -n hipoteca-inversa --sort-by=.lastTimestamp"
+    kubectl get pods -n hipoteca-inversa
+    exit 1
+}
 
 # 8. Mostrar Estado del Cluster
 Write-Host "`n==================================================================" -ForegroundColor Cyan

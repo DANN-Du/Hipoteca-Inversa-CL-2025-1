@@ -5,6 +5,9 @@ namespace: hipoteca-inversa
 
 resources:
   - namespace.yaml
+  # postgres-secret.yaml se genera localmente desde postgres-secret.example.yaml
+  # (está en .gitignore: las credenciales no se suben a Git)
+  - postgres-secret.yaml
   - postgres-configmap.yaml
   - postgres-init-configmap.yaml
   - postgres-pvc.yaml
@@ -16,23 +19,8 @@ resources:
   - frontend-service.yaml
   - ingress.yaml
 
-# El Secret se genera a partir de k8s/postgres-secret.env (ignorado por Git).
-# Plantilla: k8s/postgres-secret.env.example
-secretGenerator:
-  - name: postgres-secret
-    type: Opaque
-    envs:
-      - postgres-secret.env
-    options:
-      labels:
-        app: postgres
-        tier: database
-
-generatorOptions:
-  disableNameSuffixHash: true
-
-# Imágenes desplegadas: el CI reemplaza newTag por sha-<commit> tras publicar
-# en DockerHub, de modo que cada pod se puede rastrear hasta su commit.
+# Imágenes desplegadas (publicadas por el CI en DockerHub con tags latest,
+# v2.0.0 y sha-<commit>).
 images:
   - name: dduque642/hipoteca-inversa-backend
     newTag: v2.0.0
