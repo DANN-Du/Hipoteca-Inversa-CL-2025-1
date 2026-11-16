@@ -38,7 +38,7 @@
   3. Si la edad es >= 75 años: 50% del valor a 10 años.
   4. Si la edad es < 65 o >= 115 años, el sistema rechaza la solicitud con error explicativo (HTTP 400).
   5. El valor del inmueble debe ser de mínimo $50,000,000 COP.
-- **Evidencia Técnica:** `src/model/calculo.py`, `tests/test_calculo.py` (24 pruebas unitarias aprobadas).
+- **Evidencia Técnica:** `backend/src//calculo.py`, `tests/test_calculo.py` (24 pruebas unitarias aprobadas).
 
 ---
 
@@ -51,7 +51,7 @@
   1. La cédula debe ser única en el sistema (Primary Key).
   2. La fecha de nacimiento debe coincidir coherentemente con la edad calculada.
   3. Los datos deben persistir en la tabla `solicitantes` de PostgreSQL.
-- **Evidencia Técnica:** `src/controller/controlador_solicitante.py`, `tests/test_solicitante.py`.
+- **Evidencia Técnica:** `backend/src//controlador_solicitante.py`, `tests/test_solicitante.py`.
 
 ---
 
@@ -64,7 +64,7 @@
   1. La dirección debe ser única en el sistema.
   2. El avalúo debe cumplir el monto mínimo de ley ($50,000,000 COP).
   3. Los datos deben persistir en la tabla `viviendas` de PostgreSQL.
-- **Evidencia Técnica:** `src/controller/controlador_vivienda.py`, `tests/test_vivienda.py`.
+- **Evidencia Técnica:** `backend/src//controlador_vivienda.py`, `tests/test_vivienda.py`.
 
 ---
 

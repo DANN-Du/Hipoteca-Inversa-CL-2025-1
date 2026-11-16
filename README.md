@@ -86,7 +86,7 @@ Sistema integral de simulación financiera de **Hipotecas Inversas en Colombia**
 Hipoteca-Inversa-CL-2025-1/
 ├── k8s/                                # ☸️ MANIFIESTOS DECLARATIVOS KUBERNETES
 │   ├── namespace.yaml                  # Namespace dedicado 'hipoteca-inversa'
-│   ├── postgres-secret.yaml            # Secret con credenciales seguras de BD
+│   ├── postgres-secret.example.yaml    # Plantilla del Secret; postgres-secret.yaml se genera local (no se versiona)
 │   ├── postgres-configmap.yaml         # ConfigMap de variables de entorno (DB_HOST, DB_PORT)
 │   ├── postgres-init-configmap.yaml    # ConfigMap con script SQL de inicialización automática
 │   ├── postgres-pvc.yaml               # Almacenamiento persistente (1Gi ReadWriteOnce)
@@ -145,6 +145,7 @@ chmod +x scripts/*.sh
 
 ### O Despliegue Manual con Kustomize:
 ```bash
+cp k8s/postgres-secret.example.yaml k8s/postgres-secret.yaml   # cambiar la contraseña (no se sube a Git)
 kubectl apply -k k8s/
 ```
 

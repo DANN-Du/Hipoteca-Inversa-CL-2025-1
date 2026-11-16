@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # Script de Despliegue Automatizado en Minikube / Kubernetes
 # Proyecto: Hipoteca Inversa CL - Entrega Final DevOps
 # ==============================================================================
@@ -35,7 +35,28 @@ try {
     Write-Host "ℹ️  Omitiendo addons si ya están configurados o en cluster remoto."
 }
 
-# 4. Aplicar manifiestos declarativos en Kubernetes (GitOps)
+# 4. Preparar Secret local (k8s/postgres-secret.yaml no se versiona en Git)
+$secretFile = "k8s/postgres-secret.yaml"
+if (-not (Test-Path $secretFile)) {
+    Write-Host "`n🔐 Creando $secretFile con una contraseña aleatoria (no se sube a Git)..." -ForegroundColor Yellow
+    $chars = [char[]]"abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+    $pass = -join (1..24 | ForEach-Object { $chars | Get-Random })
+    (Get-Content "k8s/postgres-secret.example.yaml") -replace "CAMBIAR_ESTA_CONTRASENA", $pass | Set-Content $secretFile
+    Write-Host "✅ Secret local creado. Si ya tenía datos en el PVC con otra contraseña, edite $secretFile." -ForegroundColor Green
+}
+
+# 5. Construir imágenes dentro de Minikube si aún no están (útil sin DockerHub)
+$tag = "v2.0.0"
+foreach ($svc in @("backend", "frontend")) {
+    $img = "dduque642/hipoteca-inversa-${svc}:$tag"
+    $existe = minikube image ls 2>$null | Select-String -SimpleMatch $img
+    if (-not $existe) {
+        Write-Host "🐳 Construyendo $img dentro de Minikube..." -ForegroundColor Yellow
+        minikube image build -t $img "./$svc"
+    }
+}
+
+# 6. Aplicar manifiestos declarativos en Kubernetes (GitOps)
 Write-Host "`n⚙️  Aplicando manifiestos declarativos (k8s/)..." -ForegroundColor Yellow
 kubectl apply -k k8s/
 if ($LASTEXITCODE -ne 0) {
@@ -44,25 +65,29 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-Host "✅ Manifiestos aplicados con éxito." -ForegroundColor Green
 
-# 5. Esperar Rollout de Recursos
+# 7. Esperar Rollout de Recursos
 Write-Host "`n⏳ Esperando que los despliegues estén listos..." -ForegroundColor Yellow
 
-Write-Host "-> Despliegue PostgreSQL..."
-kubectl rollout status deployment/postgres-deployment -n hipoteca-inversa --timeout=120s
+$fallos = @()
+foreach ($dep in @("postgres-deployment", "backend-deployment", "frontend-deployment")) {
+    Write-Host "-> $dep..."
+    kubectl rollout status deployment/$dep -n hipoteca-inversa --timeout=300s
+    if ($LASTEXITCODE -ne 0) { $fallos += $dep }
+}
+if ($fallos.Count -gt 0) {
+    Write-Host "`n❌ No quedaron listos: $($fallos -join ', ')" -ForegroundColor Red
+    Write-Host "   Diagnóstico: kubectl get pods -n hipoteca-inversa ; kubectl describe pod <pod> -n hipoteca-inversa ; kubectl get events -n hipoteca-inversa --sort-by=.lastTimestamp"
+    kubectl get pods -n hipoteca-inversa
+    exit 1
+}
 
-Write-Host "-> Despliegue Backend API..."
-kubectl rollout status deployment/backend-deployment -n hipoteca-inversa --timeout=120s
-
-Write-Host "-> Despliegue Frontend Web..."
-kubectl rollout status deployment/frontend-deployment -n hipoteca-inversa --timeout=120s
-
-# 6. Mostrar Estado del Cluster
+# 8. Mostrar Estado del Cluster
 Write-Host "`n==================================================================" -ForegroundColor Cyan
 Write-Host " 📊 Estado de los Recursos en el Namespace 'hipoteca-inversa'" -ForegroundColor Cyan
 Write-Host "==================================================================" -ForegroundColor Cyan
 kubectl get all,pvc,ingress -n hipoteca-inversa -o wide
 
-# 7. Obtener URL de acceso
+# 9. Obtener URL de acceso
 Write-Host "`n==================================================================" -ForegroundColor Green
 Write-Host " 🎉 Despliegue Finalizado Exitosamente" -ForegroundColor Green
 Write-Host "==================================================================" -ForegroundColor Green

@@ -1,9 +1,9 @@
 {
   "python.autoComplete.extraPaths": [
-    "${workspaceFolder}/src"
+    "${workspaceFolder}/backend/src"
   ],
   "python.analysis.extraPaths": [
-    "${workspaceFolder}/src"
+    "${workspaceFolder}/backend/src"
 ],
 "python.testing.unittestArgs": [
     "-v",

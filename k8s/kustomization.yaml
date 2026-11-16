@@ -5,6 +5,8 @@ namespace: hipoteca-inversa
 
 resources:
   - namespace.yaml
+  # postgres-secret.yaml se genera localmente desde postgres-secret.example.yaml
+  # (está en .gitignore: las credenciales no se suben a Git)
   - postgres-secret.yaml
   - postgres-configmap.yaml
   - postgres-init-configmap.yaml
@@ -16,6 +18,14 @@ resources:
   - frontend-deployment.yaml
   - frontend-service.yaml
   - ingress.yaml
+
+# Imágenes desplegadas (publicadas por el CI en DockerHub con tags latest,
+# v2.0.0 y sha-<commit>).
+images:
+  - name: dduque642/hipoteca-inversa-backend
+    newTag: v2.0.0
+  - name: dduque642/hipoteca-inversa-frontend
+    newTag: v2.0.0
 
 labels:
   - pairs:

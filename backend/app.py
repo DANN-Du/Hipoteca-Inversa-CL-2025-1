@@ -19,6 +19,12 @@ from controller.controlador_vivienda import ControladorVivienda
 app = Flask(__name__)
 CORS(app)
 
+# Los detalles técnicos de los errores se registran en los logs del pod
+# (kubectl logs), nunca se devuelven al cliente.
+def error_interno(mensaje, codigo=500):
+    app.logger.exception(mensaje)
+    return jsonify({"error": mensaje}), codigo
+
 # ============================================================================
 # CONFIGURACIÓN DE SWAGGER (OPENAPI)
 # ============================================================================
@@ -132,7 +138,8 @@ def health_check():
         db_details = "Conexión a PostgreSQL establecida exitosamente"
     except Exception as e:
         db_status = "error_conexion"
-        db_details = str(e)
+        app.logger.exception("Fallo de conexión a PostgreSQL")
+        db_details = "No fue posible conectar con la base de datos (ver logs del backend)"
 
     status_code = 200 if db_status == "conectado" else 503
     return jsonify({
@@ -244,7 +251,7 @@ def listar_solicitantes():
         solicitantes = ControladorSolicitante.listar_todos()
         return jsonify([s.to_dict() for s in solicitantes]), 200
     except Exception as e:
-        return jsonify({"error": f"Error al consultar solicitantes: {str(e)}"}), 500
+        return error_interno("Error al consultar solicitantes")
 
 
 @app.route("/api/v1/solicitantes", methods=["POST"])
@@ -317,7 +324,7 @@ def crear_solicitante_api():
             "solicitante": solicitante.to_dict()
         }), 201
     except Exception as e:
-        return jsonify({"error": f"Error al guardar solicitante: {str(e)}"}), 500
+        return error_interno("Error al guardar solicitante")
 
 
 @app.route("/api/v1/solicitantes/<identificacion>", methods=["GET"])
@@ -345,7 +352,7 @@ def buscar_solicitante_api(identificacion):
             return jsonify({"error": f"No se encontró solicitante con identificación {identificacion}"}), 404
         return jsonify(solicitante.to_dict()), 200
     except Exception as e:
-        return jsonify({"error": f"Error en la consulta: {str(e)}"}), 500
+        return error_interno("Error en la consulta")
 
 
 @app.route("/api/v1/solicitantes/<identificacion>", methods=["PUT"])
@@ -391,7 +398,7 @@ def modificar_solicitante_api(identificacion):
     except ValueError as ve:
         return jsonify({"error": str(ve)}), 404
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return error_interno("Error interno del servidor")
 
 
 # ============================================================================
@@ -414,7 +421,7 @@ def listar_viviendas():
         viviendas = ControladorVivienda.listar_todas()
         return jsonify([v.to_dict() for v in viviendas]), 200
     except Exception as e:
-        return jsonify({"error": f"Error al consultar viviendas: {str(e)}"}), 500
+        return error_interno("Error al consultar viviendas")
 
 
 @app.route("/api/v1/viviendas", methods=["POST"])
@@ -492,7 +499,7 @@ def crear_vivienda_api():
             "vivienda": vivienda.to_dict()
         }), 201
     except Exception as e:
-        return jsonify({"error": f"Error al guardar vivienda (verifique que el propietario exista): {str(e)}"}), 400
+        return error_interno("Error al guardar vivienda (verifique que el propietario exista)", 400)
 
 
 @app.route("/api/v1/viviendas/<path:direccion>", methods=["GET"])
@@ -519,7 +526,7 @@ def buscar_vivienda_direccion(direccion):
             return jsonify({"error": f"No se encontró vivienda con dirección {direccion}"}), 404
         return jsonify(vivienda.to_dict()), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return error_interno("Error interno del servidor")
 
 
 @app.route("/api/v1/viviendas/propietario/<identificacion>", methods=["GET"])
@@ -542,7 +549,7 @@ def buscar_viviendas_propietario(identificacion):
         viviendas = ControladorVivienda.buscar_por_propietario(identificacion)
         return jsonify([v.to_dict() for v in viviendas]), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return error_interno("Error interno del servidor")
 
 
 # ============================================================================
@@ -617,10 +624,11 @@ def ejecutar_flujo_prueba():
             "pasos": pasos
         }), 200
 
-    except Exception as e:
+    except Exception:
+        app.logger.exception("Error en el flujo de prueba E2E")
         return jsonify({
             "resultado": "FALLIDO",
-            "mensaje": f"Error en la ejecución del flujo de prueba: {str(e)}",
+            "mensaje": "Error en la ejecución del flujo de prueba (ver logs del backend)",
             "pasos": pasos
         }), 500
 
@@ -641,7 +649,7 @@ def api_crear_tablas():
         ControladorVivienda.crear_tabla()
         return jsonify({"mensaje": "Tablas solicitantes y viviendas creadas exitosamente"}), 200
     except Exception as e:
-        return jsonify({"error": f"Error al crear tablas: {str(e)}"}), 500
+        return error_interno("Error al crear tablas")
 
 
 # ============================================================================
@@ -677,7 +685,8 @@ def guardar_solicitante():
         ControladorSolicitante.insertar(solicitante)
         return "Solicitante insertado exitosamente"
     except Exception as e:
-        return f"Error al insertar solicitante: {e}", 400
+        app.logger.exception("Error al insertar solicitante")
+        return "Error al insertar solicitante", 400
 
 
 @app.route("/buscar_solicitante")
@@ -722,7 +731,8 @@ def crear_tablas():
         ControladorVivienda.crear_tabla()
         return "Tablas creadas exitosamente"
     except Exception as e:
-        return f"Error al crear tablas: {e}", 500
+        app.logger.exception("Error al crear tablas")
+        return "Error al crear tablas", 500
 
 
 if __name__ == "__main__":

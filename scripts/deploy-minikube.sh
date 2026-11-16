@@ -25,17 +25,42 @@ if command -v minikube &> /dev/null; then
     minikube addons enable metrics-server 2>/dev/null || true
 fi
 
-# 3. Aplicar manifiestos K8s
+# 3. Preparar Secret local (k8s/postgres-secret.yaml no se versiona en Git)
+SECRET_FILE="k8s/postgres-secret.yaml"
+if [ ! -f "$SECRET_FILE" ]; then
+    echo "🔐 Creando $SECRET_FILE con una contraseña aleatoria (no se sube a Git)..."
+    PASS=$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 24 || true)
+    sed "s/CAMBIAR_ESTA_CONTRASENA/${PASS}/g" k8s/postgres-secret.example.yaml > "$SECRET_FILE"
+    echo "✅ Secret local creado. Si ya tenía datos en el PVC con otra contraseña, edite $SECRET_FILE."
+fi
+
+# 4. Construir imágenes dentro de Minikube si aún no están (útil sin DockerHub)
+if command -v minikube &> /dev/null; then
+    for svc in backend frontend; do
+        IMG="dduque642/hipoteca-inversa-${svc}:v2.0.0"
+        if ! minikube image ls 2>/dev/null | grep -qF "$IMG"; then
+            echo "🐳 Construyendo $IMG dentro de Minikube..."
+            minikube image build -t "$IMG" "./$svc"
+        fi
+    done
+fi
+
+# 5. Aplicar manifiestos K8s
 echo "⚙️  Aplicando manifiestos declarativos de Kubernetes (k8s/)..."
 kubectl apply -k k8s/
 
-# 4. Esperar rollout
+# 6. Esperar rollout
 echo "⏳ Esperando que los despliegues estén listos..."
-kubectl rollout status deployment/postgres-deployment -n hipoteca-inversa --timeout=120s
-kubectl rollout status deployment/backend-deployment -n hipoteca-inversa --timeout=120s
-kubectl rollout status deployment/frontend-deployment -n hipoteca-inversa --timeout=120s
+for dep in postgres-deployment backend-deployment frontend-deployment; do
+    if ! kubectl rollout status "deployment/$dep" -n hipoteca-inversa --timeout=300s; then
+        echo "❌ $dep no quedó listo. Diagnóstico:"
+        echo "   kubectl describe pod -l app=${dep%-deployment} -n hipoteca-inversa"
+        kubectl get pods -n hipoteca-inversa
+        exit 1
+    fi
+done
 
-# 5. Estado general
+# 7. Estado general
 echo "=================================================================="
 echo " 📊 Recursos en namespace 'hipoteca-inversa':"
 echo "=================================================================="

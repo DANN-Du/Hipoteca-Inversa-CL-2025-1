@@ -29,6 +29,9 @@ spec:
         - name: backend
           image: dduque642/hipoteca-inversa-backend:latest
           imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
           ports:
             - containerPort: 5000
               name: http
