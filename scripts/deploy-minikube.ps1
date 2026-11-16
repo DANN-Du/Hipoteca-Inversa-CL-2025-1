@@ -38,11 +38,19 @@ try {
 # 4. Preparar Secret local (k8s/postgres-secret.yaml no se versiona en Git)
 $secretFile = "k8s/postgres-secret.yaml"
 if (-not (Test-Path $secretFile)) {
-    Write-Host "`n🔐 Creando $secretFile con una contraseña aleatoria (no se sube a Git)..." -ForegroundColor Yellow
-    $chars = [char[]]"abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"
-    $pass = -join (1..24 | ForEach-Object { $chars | Get-Random })
+    # Si el Secret ya existe en el cluster, se reutiliza su contraseña: la base de
+    # datos del PVC fue creada con ella y una contraseña nueva rompería la conexión.
+    $b64 = kubectl get secret postgres-secret -n hipoteca-inversa -o jsonpath="{.data.POSTGRES_PASSWORD}" 2>$null
+    if ($LASTEXITCODE -eq 0 -and $b64) {
+        Write-Host "`n🔐 Reconstruyendo $secretFile con la contraseña que ya usa el cluster (no se sube a Git)..." -ForegroundColor Yellow
+        $pass = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($b64))
+    } else {
+        Write-Host "`n🔐 Creando $secretFile con una contraseña aleatoria (no se sube a Git)..." -ForegroundColor Yellow
+        $chars = [char[]]"abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+        $pass = -join (1..24 | ForEach-Object { $chars | Get-Random })
+    }
     (Get-Content "k8s/postgres-secret.example.yaml") -replace "CAMBIAR_ESTA_CONTRASENA", $pass | Set-Content $secretFile
-    Write-Host "✅ Secret local creado. Si ya tenía datos en el PVC con otra contraseña, edite $secretFile." -ForegroundColor Green
+    Write-Host "✅ Secret local listo en $secretFile." -ForegroundColor Green
 }
 
 # 5. Construir imágenes dentro de Minikube si aún no están (útil sin DockerHub)

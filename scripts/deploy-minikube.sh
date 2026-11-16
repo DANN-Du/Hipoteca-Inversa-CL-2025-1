@@ -28,10 +28,18 @@ fi
 # 3. Preparar Secret local (k8s/postgres-secret.yaml no se versiona en Git)
 SECRET_FILE="k8s/postgres-secret.yaml"
 if [ ! -f "$SECRET_FILE" ]; then
-    echo "🔐 Creando $SECRET_FILE con una contraseña aleatoria (no se sube a Git)..."
-    PASS=$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 24 || true)
+    # Si el Secret ya existe en el cluster, se reutiliza su contraseña: la base de
+    # datos del PVC fue creada con ella y una contraseña nueva rompería la conexión.
+    B64=$(kubectl get secret postgres-secret -n hipoteca-inversa -o jsonpath='{.data.POSTGRES_PASSWORD}' 2>/dev/null || true)
+    if [ -n "$B64" ]; then
+        echo "🔐 Reconstruyendo $SECRET_FILE con la contraseña que ya usa el cluster (no se sube a Git)..."
+        PASS=$(echo "$B64" | base64 -d)
+    else
+        echo "🔐 Creando $SECRET_FILE con una contraseña aleatoria (no se sube a Git)..."
+        PASS=$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 24 || true)
+    fi
     sed "s/CAMBIAR_ESTA_CONTRASENA/${PASS}/g" k8s/postgres-secret.example.yaml > "$SECRET_FILE"
-    echo "✅ Secret local creado. Si ya tenía datos en el PVC con otra contraseña, edite $SECRET_FILE."
+    echo "✅ Secret local listo en $SECRET_FILE."
 fi
 
 # 4. Construir imágenes dentro de Minikube si aún no están (útil sin DockerHub)
