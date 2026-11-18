@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hipoteca Inversa CL | Plataforma Financiera</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Hipoteca Inversa | Plataforma Financiera</title>
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
   <!-- HEADER & NAVEGACIÓN -->
@@ -13,18 +13,25 @@
       <div class="brand">
         <span class="brand-icon">🏦</span>
         <div>
-          <h1 class="brand-title">Hipoteca Inversa CL</h1>
-          <p class="brand-subtitle">Gestión de la Configuración · Entrega 2</p>
+          <h1 class="brand-title">Hipoteca Inversa</h1>
         </div>
       </div>
       <nav class="nav-tabs" id="navTabs">
-        <button class="nav-tab active" data-tab="tab-inicio">🏠 Inicio & Estado</button>
+        <button class="nav-tab active" data-tab="tab-inicio" id="navTabInicio">🏠 Inicio</button>
         <button class="nav-tab" data-tab="tab-simulador">🧮 Simulador</button>
-        <button class="nav-tab" data-tab="tab-solicitantes">👤 Solicitantes</button>
-        <button class="nav-tab" data-tab="tab-viviendas">🏡 Viviendas</button>
-        <button class="nav-tab" data-tab="tab-flujo-prueba">🔄 Flujo de Prueba E2E</button>
-        <a href="/apidocs/" target="_blank" class="nav-tab swagger-link">📖 Swagger API ↗</a>
+        <button class="nav-tab hidden" data-tab="tab-solicitantes">👤 Solicitantes</button>
+        <button class="nav-tab hidden" data-tab="tab-viviendas">🏡 Viviendas</button>
+        <button class="nav-tab hidden" data-tab="tab-flujo-prueba">🔄 Flujo de Prueba E2E</button>
+        <button class="nav-tab hidden" data-tab="tab-admin">🛡️ Panel Admin</button>
+        <a href="/apidocs/" target="_blank" class="nav-tab swagger-link hidden" id="navSwaggerLink">📖 Swagger API ↗</a>
       </nav>
+      <div class="auth-controls" id="authControls">
+        <button type="button" class="btn-login" id="btnOpenLogin">🔐 Iniciar sesión</button>
+        <div class="user-session hidden" id="userSessionBox">
+          <span class="user-badge" id="userSessionBadge"></span>
+          <button type="button" class="btn-secondary-sm" id="btnLogout">Cerrar sesión</button>
+        </div>
+      </div>
     </div>
   </header>
 
