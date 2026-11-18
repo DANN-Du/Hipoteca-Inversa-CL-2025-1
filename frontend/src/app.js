@@ -603,3 +603,111 @@ function initAuth() {
     });
   }
 }
+
+function renderizarUsuariosAdmin() {
+  const tbody = document.getElementById("tbodyUsuariosAdmin");
+  if (!tbody) return;
+
+  const users = getStoredUsers();
+  tbody.innerHTML = "";
+
+  if (users.length === 0) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 4;
+    td.className = "text-center";
+    td.textContent = "No hay usuarios registrados.";
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    return;
+  }
+
+  const rolLabels = {
+    admin: { text: "Administrador", cls: "badge-danger" },
+    asesor: { text: "Asesor", cls: "badge-success" },
+    desarrollador: { text: "Desarrollador", cls: "badge-checking" }
+  };
+
+  users.forEach(u => {
+    const tr = document.createElement("tr");
+
+    const tdUser = document.createElement("td");
+    const strong = document.createElement("strong");
+    strong.textContent = u.usuario;
+    tdUser.appendChild(strong);
+
+    const tdNombre = document.createElement("td");
+    tdNombre.textContent = u.nombre;
+
+    const tdRol = document.createElement("td");
+    const badge = document.createElement("span");
+    const meta = rolLabels[u.rol] || { text: u.rol, cls: "badge-checking" };
+    badge.className = `badge ${meta.cls}`;
+    badge.textContent = meta.text;
+    tdRol.appendChild(badge);
+
+    const tdAcciones = document.createElement("td");
+    if (u.rol === "admin") {
+      const span = document.createElement("span");
+      span.className = "field-hint";
+      span.textContent = "Protegido";
+      tdAcciones.appendChild(span);
+    } else {
+      const btnDel = document.createElement("button");
+      btnDel.type = "button";
+      btnDel.className = "btn-danger-sm";
+      btnDel.textContent = "🗑️ Eliminar";
+      btnDel.addEventListener("click", () => {
+        const filtrados = getStoredUsers().filter(item => item.usuario !== u.usuario);
+        saveStoredUsers(filtrados);
+        renderizarUsuariosAdmin();
+      });
+      tdAcciones.appendChild(btnDel);
+    }
+
+    tr.appendChild(tdUser);
+    tr.appendChild(tdNombre);
+    tr.appendChild(tdRol);
+    tr.appendChild(tdAcciones);
+    tbody.appendChild(tr);
+  });
+}
+
+function initAdminPanel() {
+  const form = document.getElementById("formCrearUsuario");
+  const msgBox = document.getElementById("adminMsg");
+
+  if (!form) return;
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (msgBox) msgBox.classList.add("hidden");
+
+    const nombre = document.getElementById("adminNombre").value.trim();
+    const usuario = document.getElementById("adminUsuario").value.trim();
+    const password = document.getElementById("adminPassword").value;
+    const rol = document.getElementById("adminRol").value;
+
+    const users = getStoredUsers();
+    if (users.some(u => u.usuario.toLowerCase() === usuario.toLowerCase())) {
+      if (msgBox) {
+        msgBox.textContent = `❌ El usuario "${usuario}" ya existe.`;
+        msgBox.className = "alert alert-error";
+        msgBox.classList.remove("hidden");
+      }
+      return;
+    }
+
+    users.push({ usuario, password, nombre, rol });
+    saveStoredUsers(users);
+    form.reset();
+
+    if (msgBox) {
+      msgBox.textContent = `✅ Credencial creada para "${usuario}" (${rol}).`;
+      msgBox.className = "alert alert-success";
+      msgBox.classList.remove("hidden");
+    }
+
+    renderizarUsuariosAdmin();
+  });
+}
