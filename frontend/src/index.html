@@ -402,7 +402,98 @@
         </div>
       </div>
     </section>
+
+    <!-- =================================================================== -->
+    <!-- TAB 6: PANEL DE ADMINISTRADOR (GESTIÓN DE CREDENCIALES) -->
+    <!-- =================================================================== -->
+    <section id="tab-admin" class="tab-content">
+      <div class="two-col-layout">
+        <div class="card">
+          <h2>Crear Credencial de Acceso</h2>
+          <p class="card-subtitle">Cree usuarios para Asesores o Desarrolladores.</p>
+
+          <form id="formCrearUsuario">
+            <div class="form-group">
+              <label for="adminNombre">Nombre Completo:</label>
+              <input type="text" id="adminNombre" placeholder="Ej: Laura Martínez" required>
+            </div>
+            <div class="form-group">
+              <label for="adminUsuario">Usuario:</label>
+              <input type="text" id="adminUsuario" placeholder="Ej: laura.asesor" required minlength="3">
+            </div>
+            <div class="form-group">
+              <label for="adminPassword">Contraseña:</label>
+              <input type="password" id="adminPassword" placeholder="Mínimo 4 caracteres" required minlength="4">
+            </div>
+            <div class="form-group">
+              <label for="adminRol">Rol de Acceso:</label>
+              <select id="adminRol" required>
+                <option value="asesor">Asesor (Simulador, Solicitantes, Viviendas)</option>
+                <option value="desarrollador">Desarrollador (Inicio & Estado, Flujo de Prueba, Swagger)</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn-primary full-width">➕ Crear Credencial</button>
+          </form>
+          <div id="adminMsg" class="alert hidden"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header-flex">
+            <div>
+              <h2>Usuarios Registrados</h2>
+              <p class="card-subtitle">Credenciales activas para iniciar sesión en la plataforma.</p>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="tablaUsuariosAdmin">
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Nombre</th>
+                  <th>Rol</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyUsuariosAdmin">
+                <tr><td colspan="4" class="text-center">Cargando usuarios...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <!-- MODAL / PANEL DE INICIO DE SESIÓN -->
+  <div id="loginModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h2 id="loginModalTitle">🔐 Iniciar Sesión</h2>
+          <p class="card-subtitle">Acceda según su rol: Asesor, Desarrollador o Administrador.</p>
+        </div>
+        <button type="button" class="modal-close" id="btnCloseLogin" aria-label="Cerrar">✕</button>
+      </div>
+
+      <form id="formLogin">
+        <div class="form-group">
+          <label for="loginUsuario">Usuario:</label>
+          <input type="text" id="loginUsuario" placeholder="Ej: asesor, dev o admin" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Contraseña:</label>
+          <input type="password" id="loginPassword" placeholder="Ingrese su contraseña" required autocomplete="current-password">
+        </div>
+
+        <div id="loginError" class="alert alert-error hidden"></div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary full-width" id="btnSubmitLogin">Ingresar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <footer class="app-footer">
     <div class="footer-container">
@@ -411,6 +502,6 @@
     </div>
   </footer>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>
