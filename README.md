@@ -2,8 +2,8 @@
 ### Evaluación de Proyecto Semestral: Aplicación Web + API + Base de Datos Desplegada en Minikube
 
 [![CI/CD Pipeline](https://github.com/DANN-Du/Hipoteca-Inversa-CL-2025-1/actions/workflows/ci.yml/badge.svg)](https://github.com/DANN-Du/Hipoteca-Inversa-CL-2025-1/actions/workflows/ci.yml)
-[![DockerHub Backend](https://img.shields.io/badge/DockerHub-Backend%20v2.0.0-blue?logo=docker)](https://hub.docker.com/r/dduque642/hipoteca-inversa-backend)
-[![DockerHub Frontend](https://img.shields.io/badge/DockerHub-Frontend%20v2.0.0-blue?logo=docker)](https://hub.docker.com/r/dduque642/hipoteca-inversa-frontend)
+[![DockerHub Backend](https://img.shields.io/badge/DockerHub-Backend%20v2.0.0-blue?logo=docker)](https://hub.docker.com/r/juanchito1527/hipoteca-inversa-backend)
+[![DockerHub Frontend](https://img.shields.io/badge/DockerHub-Frontend%20v2.0.0-blue?logo=docker)](https://hub.docker.com/r/juanchito1527/hipoteca-inversa-frontend)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-Minikube%20Ready-326CE5?logo=kubernetes&logoColor=white)](https://kubernetes.io/)
 
 Sistema integral de simulación financiera de **Hipotecas Inversas en Colombia** y administración de solicitantes e inmuebles en garantía. Este proyecto fue implementado bajo arquitectura de microservicios contenerizados y orquestados en **Kubernetes (Minikube)**, con entrega continua automatizada mediante **GitHub Actions**, despliegue declarativo bajo principios de **GitOps**, API documentada con **Swagger (OpenAPI)** y persistencia de datos sobre **PostgreSQL 16**.
@@ -228,13 +228,13 @@ python -m pytest tests/test_playwright_e2e.py -v
 
 Las imágenes del proyecto se encuentran compiladas y publicadas en repositorios públicos de DockerHub:
 
-* **Backend API:** [`dduque642/hipoteca-inversa-backend:latest`](https://hub.docker.com/r/dduque642/hipoteca-inversa-backend) (y etiqueta `v2.0.0`)
+* **Backend API:** [`juanchito1527/hipoteca-inversa-backend:latest`](https://hub.docker.com/r/juanchito1527/hipoteca-inversa-backend) (y etiqueta `v2.0.0`)
   ```bash
-  docker pull dduque642/hipoteca-inversa-backend:v2.0.0
+  docker pull juanchito1527/hipoteca-inversa-backend:v2.0.0
   ```
-* **Frontend Web:** [`dduque642/hipoteca-inversa-frontend:latest`](https://hub.docker.com/r/dduque642/hipoteca-inversa-frontend) (y etiqueta `v2.0.0`)
+* **Frontend Web:** [`juanchito1527/hipoteca-inversa-frontend:latest`](https://hub.docker.com/r/juanchito1527/hipoteca-inversa-frontend) (y etiqueta `v2.0.0`)
   ```bash
-  docker pull dduque642/hipoteca-inversa-frontend:v2.0.0
+  docker pull juanchito1527/hipoteca-inversa-frontend:v2.0.0
   ```
 
 ---
