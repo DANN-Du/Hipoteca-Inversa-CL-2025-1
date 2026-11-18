@@ -260,13 +260,6 @@ La API REST cuenta con especificación OpenAPI disponible en:
 
 ---
 
-## 📑 Recursos Adicionales para la Sustentación
-* 🎤 [Guión del Elevator Pitch (P1 a P4)](docs/ELEVATOR_PITCH_Y_DEFENSA.md)
-* 🛠️ [Guía Paso a Paso de la Demostración Técnica (D1 a D9)](docs/GUIA_DEMOSTRACION_TECNICA.md)
-* 🔄 [Estrategia GitOps y Trazabilidad de Entrega (D6)](docs/GITOPS_Y_TRAZABILIDAD.md)
-* 📊 [Rúbrica Oficial Diligenciada](docs/Rubrica_Entrega_Final_DevOps_Diligenciada.xlsx)
-
----
 
 ## 🔐 Credenciales de Prueba (Inicio de Sesión por Roles)
 
