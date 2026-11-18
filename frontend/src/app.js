@@ -96,40 +96,78 @@ function setCurrentSession(session) {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function activarPestana(targetId) {
   const tabs = document.querySelectorAll(".nav-tab[data-tab]");
   const contents = document.querySelectorAll(".tab-content");
 
-  tabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-      tabs.forEach(t => t.classList.remove("active"));
-      contents.forEach(c => c.classList.remove("active"));
+  tabs.forEach(t => t.classList.toggle("active", t.getAttribute("data-tab") === targetId));
+  contents.forEach(c => c.classList.toggle("active", c.id === targetId));
 
-      tab.classList.add("active");
-      const targetId = tab.getAttribute("data-tab");
-      const targetContent = document.getElementById(targetId);
-      if (targetContent) {
-        targetContent.classList.add("active");
-      }
+  if (targetId === "tab-solicitantes") cargarSolicitantes();
+  if (targetId === "tab-viviendas") cargarViviendas();
+  if (targetId === "tab-admin") renderizarUsuariosAdmin();
+}
 
-      // Si cambia a solicitantes o viviendas, refrescar tablas
-      if (targetId === "tab-solicitantes") cargarSolicitantes();
-      if (targetId === "tab-viviendas") cargarViviendas();
-    });
+function aplicarPermisosRol() {
+  const session = getCurrentSession();
+  const rol = session && ROLE_CONFIG[session.rol] ? session.rol : "public";
+  const cfg = ROLE_CONFIG[rol];
+
+  const btnOpenLogin = document.getElementById("btnOpenLogin");
+  const userSessionBox = document.getElementById("userSessionBox");
+  const userSessionBadge = document.getElementById("userSessionBadge");
+  const navTabInicio = document.getElementById("navTabInicio");
+  const navSwaggerLink = document.getElementById("navSwaggerLink");
+  const estadoComponentes = document.getElementById("inicioEstadoComponentes");
+
+  if (session) {
+    if (btnOpenLogin) btnOpenLogin.classList.add("hidden");
+    if (userSessionBox) userSessionBox.classList.remove("hidden");
+    if (userSessionBadge) userSessionBadge.textContent = `${session.nombre} (${cfg.label})`;
+  } else {
+    if (btnOpenLogin) btnOpenLogin.classList.remove("hidden");
+    if (userSessionBox) userSessionBox.classList.add("hidden");
+  }
+
+  if (navTabInicio) navTabInicio.textContent = cfg.inicioLabel;
+  if (navSwaggerLink) navSwaggerLink.classList.toggle("hidden", !cfg.showSwagger);
+  if (estadoComponentes) estadoComponentes.classList.toggle("hidden", !cfg.showEstadoComponentes);
+
+  document.querySelectorAll(".nav-tab[data-tab]").forEach(tab => {
+    const tabId = tab.getAttribute("data-tab");
+    tab.classList.toggle("hidden", !cfg.tabs.includes(tabId));
   });
 
-  // Inicializar estado de salud
-  verificarSaludServicios();
+  activarPestana(cfg.defaultTab);
+
+  if (cfg.showEstadoComponentes) {
+    verificarSaludServicios();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const tabs = document.querySelectorAll(".nav-tab[data-tab]");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      activarPestana(tab.getAttribute("data-tab"));
+    });
+  });
 
   // Escuchar botón de verificación manual
   const btnHealth = document.getElementById("btnCheckHealth");
   if (btnHealth) btnHealth.addEventListener("click", verificarSaludServicios);
 
   // Inicializar formularios y listeners
+  initAuth();
+  initAdminPanel();
   initCalculo();
   initSolicitantes();
   initViviendas();
   initFlujoPrueba();
+
+  // Aplicar permisos según sesión actual (sin sesión: Simulador + Inicio)
+  aplicarPermisosRol();
 });
 
 // =====================================================================
