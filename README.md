@@ -265,3 +265,15 @@ La API REST cuenta con especificación OpenAPI disponible en:
 * 🛠️ [Guía Paso a Paso de la Demostración Técnica (D1 a D9)](docs/GUIA_DEMOSTRACION_TECNICA.md)
 * 🔄 [Estrategia GitOps y Trazabilidad de Entrega (D6)](docs/GITOPS_Y_TRAZABILIDAD.md)
 * 📊 [Rúbrica Oficial Diligenciada](docs/Rubrica_Entrega_Final_DevOps_Diligenciada.xlsx)
+
+---
+
+## 🔐 Credenciales de Prueba (Inicio de Sesión por Roles)
+
+La interfaz web cuenta con control de acceso por roles desde el botón **Iniciar sesión** (esquina superior derecha). Los visitantes sin sesión ven únicamente **Inicio** (bienvenida) y **Simulador**.
+
+| Rol | Usuario | Contraseña | Acceso habilitado |
+| :--- | :--- | :--- | :--- |
+| **Asesor** | `asesor` | `Asesor2025*` | Simulador, Solicitantes y Viviendas |
+| **Desarrollador** | `dev` | `Dev2025*` | Inicio & Estado, Flujo de Prueba E2E y Swagger API |
+| **Administrador** | `admin` | `Admin2025*` | Panel Admin (ver, crear y eliminar credenciales de asesor/desarrollador) + todas las pestañas |
