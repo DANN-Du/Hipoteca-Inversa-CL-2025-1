@@ -17,8 +17,85 @@ const formatCOP = (num) => {
 };
 
 // =====================================================================
-// NAVEGACIÓN POR PESTAÑAS
+// NAVEGACIÓN POR PESTAÑAS Y CONTROL DE ACCESO POR ROLES
 // =====================================================================
+const AUTH_USERS_KEY = "hipoteca_auth_users_v1";
+const AUTH_SESSION_KEY = "hipoteca_auth_session_v1";
+
+const DEFAULT_USERS = [
+  { usuario: "asesor", password: "Asesor2025*", nombre: "Asesor Comercial", rol: "asesor" },
+  { usuario: "dev", password: "Dev2025*", nombre: "Desarrollador DevOps", rol: "desarrollador" },
+  { usuario: "admin", password: "Admin2025*", nombre: "Administrador", rol: "admin" }
+];
+
+const ROLE_CONFIG = {
+  public: {
+    label: "Visitante",
+    tabs: ["tab-inicio", "tab-simulador"],
+    defaultTab: "tab-inicio",
+    showSwagger: false,
+    showEstadoComponentes: false,
+    inicioLabel: "🏠 Inicio"
+  },
+  asesor: {
+    label: "Asesor",
+    tabs: ["tab-simulador", "tab-solicitantes", "tab-viviendas"],
+    defaultTab: "tab-simulador",
+    showSwagger: false,
+    showEstadoComponentes: false,
+    inicioLabel: "🏠 Inicio"
+  },
+  desarrollador: {
+    label: "Desarrollador",
+    tabs: ["tab-inicio", "tab-flujo-prueba"],
+    defaultTab: "tab-inicio",
+    showSwagger: true,
+    showEstadoComponentes: true,
+    inicioLabel: "🏠 Inicio & Estado"
+  },
+  admin: {
+    label: "Administrador",
+    tabs: ["tab-admin", "tab-simulador", "tab-inicio", "tab-solicitantes", "tab-viviendas", "tab-flujo-prueba"],
+    defaultTab: "tab-admin",
+    showSwagger: true,
+    showEstadoComponentes: true,
+    inicioLabel: "🏠 Inicio & Estado"
+  }
+};
+
+function getStoredUsers() {
+  try {
+    const raw = localStorage.getItem(AUTH_USERS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) { /* fallback a usuarios por defecto */ }
+  localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(DEFAULT_USERS));
+  return [...DEFAULT_USERS];
+}
+
+function saveStoredUsers(users) {
+  localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(users));
+}
+
+function getCurrentSession() {
+  try {
+    const raw = localStorage.getItem(AUTH_SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function setCurrentSession(session) {
+  if (session) {
+    localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
+  } else {
+    localStorage.removeItem(AUTH_SESSION_KEY);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const tabs = document.querySelectorAll(".nav-tab[data-tab]");
   const contents = document.querySelectorAll(".tab-content");
