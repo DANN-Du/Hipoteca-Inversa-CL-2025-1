@@ -50,20 +50,31 @@ def browser_context():
         yield context
         browser.close()
 
+def _iniciar_sesion(page, usuario, password):
+    page.click("#btnOpenLogin")
+    page.fill("#loginUsuario", usuario)
+    page.fill("#loginPassword", password)
+    page.click("#btnSubmitLogin")
+
 def test_e2e_carga_inicial_hola_mundo(browser_context):
-    """Verifica la carga inicial de la aplicación, título y mensaje Hola Mundo."""
+    """Verifica la carga inicial en Simulador, pestaña Inicio y estado como Desarrollador."""
     page = browser_context.new_page()
     page.goto(f"{TEST_HOST}/e2e/")
 
     # Verificar título de la página
-    expect(page).to_have_title("Hipoteca Inversa CL | Plataforma Financiera")
+    expect(page).to_have_title("Hipoteca Inversa | Plataforma Financiera")
 
-    # Verificar mensaje de Hola Mundo en el hero
+    # Al abrir sin sesión debe mostrarse Inicio primero y el botón de Iniciar sesión
+    expect(page.locator("#tab-inicio")).to_be_visible()
+    expect(page.locator("#btnOpenLogin")).to_be_visible()
+
+    # Verificar pantalla de bienvenida en pestaña Inicio
     hero_title = page.locator(".hero-title")
     expect(hero_title).to_be_visible()
-    expect(hero_title).to_contain_text("¡Hola Mundo desde el Frontend de Hipoteca Inversa CL!")
+    expect(hero_title).to_contain_text("Bienvenido a tu Plataforma de Hipoteca Inversa")
 
-    # Verificar estado del Frontend
+    # Iniciar sesión como desarrollador para verificar estado del Frontend
+    _iniciar_sesion(page, "dev", "Dev2025*")
     card_frontend = page.locator("#cardFrontend")
     expect(card_frontend).to_be_visible()
     expect(card_frontend).to_contain_text("Online · Puerto 80")
@@ -97,21 +108,34 @@ def test_e2e_simulador_calculo_exitoso(browser_context):
     page.close()
 
 def test_e2e_navegacion_pestanas(browser_context):
-    """Verifica que las pestañas de Solicitantes y Viviendas se abran y rendericen correctamente."""
+    """Verifica la navegación por roles (Asesor, Desarrollador y Administrador)."""
     page = browser_context.new_page()
     page.goto(f"{TEST_HOST}/e2e/")
 
-    # Navegar a Solicitantes
+    # Iniciar sesión como Asesor y navegar a Solicitantes y Viviendas
+    _iniciar_sesion(page, "asesor", "Asesor2025*")
     page.click("button[data-tab='tab-solicitantes']")
     expect(page.locator("#tab-solicitantes h2").first).to_contain_text("Registrar Solicitante")
     expect(page.locator("#tablaSolicitantes")).to_be_visible()
 
-    # Navegar a Viviendas
     page.click("button[data-tab='tab-viviendas']")
     expect(page.locator("#tab-viviendas h2").first).to_contain_text("Registrar Vivienda en Garantía")
     expect(page.locator("#tablaViviendas")).to_be_visible()
 
-    # Navegar a Flujo de Prueba
+    # Cerrar sesión e iniciar como Desarrollador para navegar a Flujo de Prueba
+    page.click("#btnLogout")
+    _iniciar_sesion(page, "dev", "Dev2025*")
     page.click("button[data-tab='tab-flujo-prueba']")
     expect(page.locator("#btnEjecutarFlujo")).to_be_visible()
+
+    # Cerrar sesión e iniciar como Admin para verificar creación/eliminación de usuarios
+    page.click("#btnLogout")
+    _iniciar_sesion(page, "admin", "Admin2025*")
+    expect(page.locator("#tab-admin")).to_be_visible()
+    page.fill("#adminNombre", "Nuevo Asesor")
+    page.fill("#adminUsuario", "nuevo.asesor")
+    page.fill("#adminPassword", "Clave1234")
+    page.select_option("#adminRol", "asesor")
+    page.click("#formCrearUsuario button[type='submit']")
+    expect(page.locator("#tbodyUsuariosAdmin")).to_contain_text("nuevo.asesor")
     page.close()
