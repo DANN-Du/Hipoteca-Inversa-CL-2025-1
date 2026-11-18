@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: dduque642/hipoteca-inversa-backend:latest
+          image: juanchito1527/hipoteca-inversa-backend:latest
           imagePullPolicy: IfNotPresent
           securityContext:
             runAsNonRoot: true

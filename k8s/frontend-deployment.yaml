@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: dduque642/hipoteca-inversa-frontend:latest
+          image: juanchito1527/hipoteca-inversa-frontend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80

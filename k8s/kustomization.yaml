@@ -22,9 +22,9 @@ resources:
 # Imágenes desplegadas (publicadas por el CI en DockerHub con tags latest,
 # v2.0.0 y sha-<commit>).
 images:
-  - name: dduque642/hipoteca-inversa-backend
+  - name: juanchito1527/hipoteca-inversa-backend
     newTag: v2.0.0
-  - name: dduque642/hipoteca-inversa-frontend
+  - name: juanchito1527/hipoteca-inversa-frontend
     newTag: v2.0.0
 
 labels:
