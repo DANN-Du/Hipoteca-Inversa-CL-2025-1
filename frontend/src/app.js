@@ -531,3 +531,75 @@ function initFlujoPrueba() {
     }
   });
 }
+
+// =====================================================================
+// INICIO DE SESIÓN Y PANEL DE ADMINISTRADOR
+// =====================================================================
+function initAuth() {
+  const modal = document.getElementById("loginModal");
+  const btnOpen = document.getElementById("btnOpenLogin");
+  const btnClose = document.getElementById("btnCloseLogin");
+  const btnLogout = document.getElementById("btnLogout");
+  const form = document.getElementById("formLogin");
+  const errorBox = document.getElementById("loginError");
+
+  const cerrarModal = () => {
+    if (modal) modal.classList.add("hidden");
+    if (errorBox) errorBox.classList.add("hidden");
+    if (form) form.reset();
+  };
+
+  if (btnOpen && modal) {
+    btnOpen.addEventListener("click", () => {
+      modal.classList.remove("hidden");
+      const inputUser = document.getElementById("loginUsuario");
+      if (inputUser) inputUser.focus();
+    });
+  }
+
+  if (btnClose) btnClose.addEventListener("click", cerrarModal);
+
+  if (modal) {
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) cerrarModal();
+    });
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal && !modal.classList.contains("hidden")) {
+      cerrarModal();
+    }
+  });
+
+  if (btnLogout) {
+    btnLogout.addEventListener("click", () => {
+      setCurrentSession(null);
+      aplicarPermisosRol();
+    });
+  }
+
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (errorBox) errorBox.classList.add("hidden");
+
+      const usuario = document.getElementById("loginUsuario").value.trim();
+      const password = document.getElementById("loginPassword").value;
+
+      const users = getStoredUsers();
+      const match = users.find(u => u.usuario === usuario && u.password === password);
+
+      if (!match) {
+        if (errorBox) {
+          errorBox.textContent = "❌ Usuario o contraseña incorrectos.";
+          errorBox.classList.remove("hidden");
+        }
+        return;
+      }
+
+      setCurrentSession({ usuario: match.usuario, nombre: match.nombre, rol: match.rol });
+      cerrarModal();
+      aplicarPermisosRol();
+    });
+  }
+}
